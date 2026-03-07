@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OpenClaw AI Agent — X/Twitter Outreach Campaign</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+.header{background:linear-gradient(135deg,#1a2b1a,#0d1117);border-bottom:1px solid #21262d;padding:40px 0;text-align:center}
+.header h1{font-size:2.2em;background:linear-gradient(90deg,#3fb950,#56d364);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header p{color:#8b949e;font-size:1.1em}
+.badge{display:inline-block;background:#238636;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8em;margin-top:12px}
+.container{max-width:1100px;margin:0 auto;padding:40px 20px}
+.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.section:nth-child(2){animation-delay:.15s}.section:nth-child(3){animation-delay:.3s}.section:nth-child(4){animation-delay:.45s}
+h2{font-size:1.5em;margin-bottom:20px;color:#3fb950;display:flex;align-items:center;gap:10px}
+
+/* Architecture */
+.arch{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;margin-bottom:20px}
+.arch-node{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;text-align:center;min-width:140px;transition:transform .2s,border-color .2s}
+.arch-node:hover{transform:translateY(-3px);border-color:#3fb950}
+.arch-icon{font-size:2em;margin-bottom:8px}
+.arch-label{font-weight:600;font-size:.95em}
+.arch-sub{color:#8b949e;font-size:.8em;margin-top:4px}
+.arch-arrow{color:#3fb950;font-size:1.8em;font-weight:700}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:30px}
+.stat-card{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;text-align:center;transition:border-color .2s}
+.stat-card:hover{border-color:#3fb950}
+.stat-num{font-size:2.2em;font-weight:700;color:#3fb950}
+.stat-label{color:#8b949e;font-size:.85em;margin-top:4px}
+
+/* Tracker */
+.tracker{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.tracker-header{background:#1c2333;padding:12px 20px;font-weight:600;border-bottom:1px solid #21262d;display:flex;justify-content:space-between}
+.tracker-row{display:grid;grid-template-columns:90px 1fr 1fr 100px;padding:12px 20px;border-bottom:1px solid #21262d11;font-size:.9em;align-items:center;transition:background .15s}
+.tracker-row:hover{background:#1c2333}
+.status{padding:3px 10px;border-radius:12px;font-size:.75em;font-weight:600;text-align:center;display:inline-block}
+.status-sent{background:#58a6ff22;color:#58a6ff}.status-replied{background:#3fb95022;color:#3fb950}
+.status-pending{background:#f0883e22;color:#f0883e}.status-rejected{background:#f8514922;color:#f85149}
+
+/* Pitch Preview */
+.pitch{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px;position:relative}
+.pitch::before{content:'📝 Sample Pitch';position:absolute;top:-10px;left:20px;background:#0d1117;padding:0 8px;color:#3fb950;font-size:.8em;font-weight:600}
+.pitch-to{color:#8b949e;font-size:.85em;margin-bottom:8px}
+.pitch-text{font-size:.95em;line-height:1.7;color:#c9d1d9}
+.pitch-text strong{color:#3fb950}
+
+/* Daily Tweet */
+.tweet{background:#161b22;border:1px solid #21262d;border-radius:16px;padding:20px;max-width:550px}
+.tweet-header{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+.tweet-avatar{width:40px;height:40px;background:linear-gradient(135deg,#3fb950,#238636);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1em}
+.tweet-name{font-weight:700;font-size:.95em}
+.tweet-handle{color:#8b949e;font-size:.85em}
+.tweet-body{font-size:.95em;line-height:1.6}
+.tweet-metrics{display:flex;gap:24px;margin-top:14px;color:#8b949e;font-size:.85em}
+
+.footer{text-align:center;padding:40px 20px;color:#484f58;border-top:1px solid #21262d;margin-top:40px;font-size:.9em}
+
+/* Approval */
+.approval{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;display:flex;align-items:center;gap:16px;max-width:500px}
+.approval-icon{font-size:2.2em}
+.approval-text h3{font-size:1em;margin-bottom:4px}
+.approval-text p{color:#8b949e;font-size:.85em}
+.approval-btns{margin-left:auto;display:flex;gap:8px}
+.btn{padding:8px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:.85em}
+.btn-approve{background:#238636;color:#fff}.btn-reject{background:#21262d;color:#c9d1d9}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🤖 OpenClaw AI Agent — X/Twitter Campaign</h1>
+<p>Automated Outreach with Human Approval Flow</p>
+<span class="badge">30-Day Campaign System</span>
+</div>
+<div class="container">
+
+<div class="section">
+<h2><span>🏗️</span> Architecture</h2>
+<div class="arch">
+<div class="arch-node"><div class="arch-icon">🧠</div><div class="arch-label">OpenClaw</div><div class="arch-sub">AI Agent Core</div></div>
+<div class="arch-arrow">→</div>
+<div class="arch-node"><div class="arch-icon">🔍</div><div class="arch-label">Research Skill</div><div class="arch-sub">Target Analysis</div></div>
+<div class="arch-arrow">→</div>
+<div class="arch-node"><div class="arch-icon">✍️</div><div class="arch-label">Draft Pitch</div><div class="arch-sub">Personalized</div></div>
+<div class="arch-arrow">→</div>
+<div class="arch-node" style="border-color:#3fb950"><div class="arch-icon">📱</div><div class="arch-label">Telegram</div><div class="arch-sub">Your Approval</div></div>
+<div class="arch-arrow">→</div>
+<div class="arch-node"><div class="arch-icon">𝕏</div><div class="arch-label">Post to X</div><div class="arch-sub">Auto-publish</div></div>
+</div>
+<p style="color:#8b949e;text-align:center;font-size:.9em">Nothing goes live without your sign-off. Every pitch is reviewed via Telegram before posting.</p>
+</div>
+
+<div class="section">
+<h2><span>📊</span> Campaign Dashboard (Mock Data)</h2>
+<div class="stats">
+<div class="stat-card"><div class="stat-num" id="c1">0</div><div class="stat-label">Pitches Sent</div></div>
+<div class="stat-card"><div class="stat-num" id="c2">0</div><div class="stat-label">Replies Received</div></div>
+<div class="stat-card"><div class="stat-num" id="c3">0%</div><div class="stat-label">Response Rate</div></div>
+<div class="stat-card"><div class="stat-num" id="c4">0</div><div class="stat-label">Days Active</div></div>
+</div>
+<div class="tracker">
+<div class="tracker-header"><span>Campaign Tracker</span><span style="color:#8b949e;font-size:.85em">Updated live</span></div>
+<div class="tracker-row"><span>Day 1</span><span>@web3_builder — DeFi infrastructure project</span><span class="pitch-text" style="font-size:.8em">"Your approach to cross-chain bridging is..."</span><span class="status status-replied">✓ Replied</span></div>
+<div class="tracker-row"><span>Day 1</span><span>@nft_creator — NFT marketplace founder</span><span style="font-size:.8em;color:#8b949e">"Saw your latest collection drop..."</span><span class="status status-sent">Sent</span></div>
+<div class="tracker-row"><span>Day 2</span><span>@dao_lead — DAO governance expert</span><span style="font-size:.8em;color:#8b949e">"Your governance proposal for..."</span><span class="status status-replied">✓ Replied</span></div>
+<div class="tracker-row"><span>Day 2</span><span>@defi_whale — Liquidity provider</span><span style="font-size:.8em;color:#8b949e">"The yield strategy you shared..."</span><span class="status status-pending">Pending</span></div>
+<div class="tracker-row"><span>Day 3</span><span>@crypto_vc — Web3 investor</span><span style="font-size:.8em;color:#8b949e">"Your thesis on L2 scaling..."</span><span class="status status-sent">Sent</span></div>
+</div>
+</div>
+
+<div class="section">
+<h2><span>📱</span> Telegram Approval Flow</h2>
+<div class="approval">
+<div class="approval-icon">📱</div>
+<div class="approval-text">
+<h3>New Pitch Ready for @web3_builder</h3>
+<p>"Your approach to cross-chain bridging caught my eye. We're building something similar..."</p>
+</div>
+<div class="approval-btns"><button class="btn btn-approve" onclick="this.textContent='✓ Approved!'">Approve</button><button class="btn btn-reject">Edit</button></div>
+</div>
+</div>
+
+<div class="section">
+<h2><span>📝</span> Sample Personalized Pitch</h2>
+<div class="pitch">
+<div class="pitch-to">To: @web3_builder · 15.2K followers · DeFi Infrastructure</div>
+<div class="pitch-text">
+Hey! Been following your work on <strong>cross-chain bridging</strong> — the approach you took with atomic swaps on your latest protocol is really smart.<br><br>
+We're building [Project Name] in the same space and I think there could be some interesting <strong>collaboration opportunities</strong>, especially around liquidity aggregation.<br><br>
+Would love to chat if you're open to it. No pressure either way 🤝
+</div>
+</div>
+</div>
+
+<div class="section">
+<h2><span>🐦</span> Auto-Generated Daily Progress Tweet</h2>
+<div class="tweet">
+<div class="tweet-header">
+<div class="tweet-avatar">🚀</div>
+<div><div class="tweet-name">Your Project</div><div class="tweet-handle">@yourproject · 2h</div></div>
+</div>
+<div class="tweet-body">
+📊 Day 3 Campaign Update:<br><br>
+→ 12 personalized pitches sent<br>
+→ 4 meaningful conversations started<br>
+→ 2 potential collaborations brewing<br><br>
+Building in public means reaching out to builders. The Web3 community has been incredibly receptive. More updates tomorrow 🔥
+</div>
+<div class="tweet-metrics"><span>💬 8</span><span>🔁 14</span><span>❤️ 47</span><span>📊 1.2K</span></div>
+</div>
+</div>
+</div>
+
+<div class="footer">
+<p>Built by <strong>Janis</strong> — Web Developer & Automation Specialist</p>
+<p style="margin-top:6px">Demo for OpenClaw X/Twitter Campaign — Custom solution preview</p>
+</div>
+
+<script>
+function animateCounter(id,target,suffix=''){let el=document.getElementById(id);let n=0;let step=Math.ceil(target/30);let iv=setInterval(()=>{n=Math.min(n+step,target);el.textContent=n+(suffix);if(n>=target)clearInterval(iv)},40)}
+setTimeout(()=>{animateCounter('c1',47);animateCounter('c2',12);animateCounter('c3',26,'%');animateCounter('c4',8)},500);
+</script>
+</body>
+</html>

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Community Manager — Arts & Tech Hub</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+.header{background:linear-gradient(135deg,#2d1b4e,#0d1117);border-bottom:1px solid #21262d;padding:40px 0;text-align:center}
+.header h1{font-size:2.2em;background:linear-gradient(90deg,#a371f7,#d2a8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header p{color:#8b949e;font-size:1.1em}
+.badge{display:inline-block;background:#8957e5;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8em;margin-top:12px}
+.container{max-width:1200px;margin:0 auto;padding:40px 20px}
+.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.2s}.section:nth-child(4){animation-delay:.3s}
+h2{font-size:1.5em;margin-bottom:20px;color:#a371f7;display:flex;align-items:center;gap:10px}
+
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #21262d}
+.tab{padding:10px 20px;cursor:pointer;color:#8b949e;border-bottom:2px solid transparent;transition:all .2s;font-size:.95em}
+.tab:hover{color:#c9d1d9}.tab.active{color:#a371f7;border-bottom-color:#a371f7}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:30px}
+.stat{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:18px;text-align:center}
+.stat-num{font-size:2em;font-weight:700;color:#a371f7}
+.stat-label{color:#8b949e;font-size:.8em;margin-top:2px}
+.stat-change{font-size:.75em;margin-top:4px}
+.up{color:#3fb950}.down{color:#f85149}
+
+/* Dual Platform */
+.dual{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+@media(max-width:700px){.dual{grid-template-columns:1fr}}
+.platform{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.plat-header{padding:14px 18px;font-weight:600;border-bottom:1px solid #21262d;display:flex;align-items:center;gap:8px}
+.msg{padding:12px 18px;border-bottom:1px solid #21262d08;display:flex;gap:10px;transition:background .15s}
+.msg:hover{background:#1c2333}
+.msg-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85em;flex-shrink:0}
+.msg-content{flex:1}
+.msg-name{font-weight:600;font-size:.85em}.msg-text{font-size:.85em;color:#c9d1d9;margin-top:2px}
+.msg-time{color:#484f58;font-size:.75em;margin-top:2px}
+.ai-badge{background:#8957e522;color:#a371f7;padding:1px 6px;border-radius:6px;font-size:.65em;margin-left:6px}
+
+/* Calendar */
+.calendar{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.cal-day{background:#161b22;border:1px solid #21262d;border-radius:8px;padding:10px 6px;text-align:center;font-size:.8em;min-height:70px}
+.cal-day.has-event{border-color:#a371f7}
+.cal-date{font-weight:600;margin-bottom:4px;color:#8b949e;font-size:.75em}
+.cal-event{background:#8957e522;color:#a371f7;padding:2px 4px;border-radius:4px;font-size:.65em;margin-top:2px}
+.cal-header{font-weight:600;color:#8b949e;font-size:.75em;text-align:center;padding:6px}
+
+/* Mod Log */
+.log{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.log-entry{padding:10px 18px;border-bottom:1px solid #21262d11;display:flex;align-items:center;gap:10px;font-size:.85em}
+.log-icon{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8em;flex-shrink:0}
+.log-action{flex:1;color:#c9d1d9}
+.log-time{color:#484f58;font-size:.75em}
+
+/* Welcome Flow */
+.flow{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.flow-step{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px;text-align:center;flex:1;min-width:150px;max-width:200px}
+.flow-num{background:#8957e5;color:#fff;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85em;margin:0 auto 10px}
+.flow-step h4{font-size:.9em;margin-bottom:4px}
+.flow-step p{font-size:.75em;color:#8b949e}
+.flow-arrow{display:flex;align-items:center;color:#a371f7;font-size:1.3em}
+
+.footer{text-align:center;padding:40px 20px;color:#484f58;border-top:1px solid #21262d;margin-top:40px;font-size:.9em}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🎨 AI Community Manager</h1>
+<p>Intelligent Community Growth for Arts & Tech</p>
+<span class="badge">Discord + Telegram • AI-Powered</span>
+</div>
+<div class="container">
+
+<div class="section">
+<div class="tabs">
+<div class="tab active" onclick="switchTab(event,'dashboard')">📊 Dashboard</div>
+<div class="tab" onclick="switchTab(event,'platforms')">💬 Live View</div>
+<div class="tab" onclick="switchTab(event,'calendar')">📅 Content Calendar</div>
+<div class="tab" onclick="switchTab(event,'moderation')">🛡️ AI Moderation</div>
+<div class="tab" onclick="switchTab(event,'welcome')">👋 Welcome Flow</div>
+</div>
+
+<div id="dashboard" class="tab-content active">
+<div class="stats">
+<div class="stat"><div class="stat-num" id="s1">0</div><div class="stat-label">Total Members</div><div class="stat-change up">↑ 23% this week</div></div>
+<div class="stat"><div class="stat-num" id="s2">0</div><div class="stat-label">Messages / Day</div><div class="stat-change up">↑ 15%</div></div>
+<div class="stat"><div class="stat-num" id="s3">0</div><div class="stat-label">Active Members</div><div class="stat-change up">↑ 8%</div></div>
+<div class="stat"><div class="stat-num" id="s4">0</div><div class="stat-label">Events This Month</div><div class="stat-change">Scheduled</div></div>
+<div class="stat"><div class="stat-num" id="s5">0</div><div class="stat-label">Spam Blocked</div><div class="stat-change down">↓ 34%</div></div>
+<div class="stat"><div class="stat-num" id="s6">0%</div><div class="stat-label">Retention Rate</div><div class="stat-change up">↑ 5%</div></div>
+</div>
+<div style="background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px">
+<h3 style="font-size:1em;margin-bottom:16px;color:#a371f7">📈 Member Growth (30 Days)</h3>
+<div style="display:flex;align-items:end;gap:4px;height:120px">
+<script>document.write([28,35,32,41,38,45,52,48,55,62,58,65,72,68,75,82,78,85,92,88,95,102,98,105,112,108,115,122,118,128].map((v,i)=>`<div style="flex:1;background:linear-gradient(to top,#8957e5,#a371f7);height:${v*0.9}px;border-radius:3px 3px 0 0;opacity:${0.4+i*0.02}" title="Day ${i+1}: ${v} new members"></div>`).join(''))</script>
+</div>
+<div style="display:flex;justify-content:space-between;color:#484f58;font-size:.7em;margin-top:6px"><span>Day 1</span><span>Day 15</span><span>Day 30</span></div>
+</div>
+</div>
+
+<div id="platforms" class="tab-content">
+<div class="dual">
+<div class="platform">
+<div class="plat-header">💜 Discord — #general</div>
+<div class="msg"><div class="msg-avatar" style="background:#3fb95033">🎨</div><div class="msg-content"><div class="msg-name">ArtistMike</div><div class="msg-text">Just finished my new generative art piece using Processing!</div><div class="msg-time">2 min ago</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#8957e533">🤖</div><div class="msg-content"><div class="msg-name">Community AI <span class="ai-badge">AI</span></div><div class="msg-text">That's awesome Mike! 🎨 Your Processing work is always impressive. Have you considered sharing it in #showcase? We also have a generative art workshop coming up on Thursday!</div><div class="msg-time">1 min ago</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#58a6ff33">💻</div><div class="msg-content"><div class="msg-name">TechSara</div><div class="msg-text">Anyone here working with TouchDesigner?</div><div class="msg-time">just now</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#8957e533">🤖</div><div class="msg-content"><div class="msg-name">Community AI <span class="ai-badge">AI</span></div><div class="msg-text">@TechSara Yes! We have a #touchdesigner channel with 12 active members. Also check out the pinned resources there — @CreativeCoder shared some great tutorials last week.</div><div class="msg-time">just now</div></div></div>
+</div>
+<div class="platform">
+<div class="plat-header">💙 Telegram — Main Group</div>
+<div class="msg"><div class="msg-avatar" style="background:#f0883e33">📸</div><div class="msg-content"><div class="msg-name">PhotoJen</div><div class="msg-text">Is the AI photography meetup still happening Saturday?</div><div class="msg-time">5 min ago</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#8957e533">🤖</div><div class="msg-content"><div class="msg-name">Community AI <span class="ai-badge">AI</span></div><div class="msg-text">Yes! Saturday at 3 PM EST 📸 We have 18 confirmed attendees. I'll send a reminder tomorrow with the Zoom link. Want me to add you to the RSVP list?</div><div class="msg-time">5 min ago</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#f8514933">🎵</div><div class="msg-content"><div class="msg-name">BeatMaker99</div><div class="msg-text">Can someone recommend a good AI music tool?</div><div class="msg-time">3 min ago</div></div></div>
+<div class="msg"><div class="msg-avatar" style="background:#8957e533">🤖</div><div class="msg-content"><div class="msg-name">Community AI <span class="ai-badge">AI</span></div><div class="msg-text">Great question! Based on what our community members use most: Suno for quick generation, Udio for more control, and Stable Audio for sound design. Check our #ai-music-tools resource list for detailed comparisons!</div><div class="msg-time">3 min ago</div></div></div>
+</div>
+</div>
+</div>
+
+<div id="calendar" class="tab-content">
+<h2 style="margin-bottom:16px"><span>📅</span> March 2026 — Auto-Generated Content</h2>
+<div class="calendar">
+<div class="cal-header">Mon</div><div class="cal-header">Tue</div><div class="cal-header">Wed</div><div class="cal-header">Thu</div><div class="cal-header">Fri</div><div class="cal-header">Sat</div><div class="cal-header">Sun</div>
+<div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div><div class="cal-day"></div>
+<div class="cal-day has-event"><div class="cal-date">1</div><div class="cal-event">🎨 Art Share Sunday</div></div>
+<div class="cal-day has-event"><div class="cal-date">2</div><div class="cal-event">💡 Monday Inspiration</div></div>
+<div class="cal-day"><div class="cal-date">3</div></div>
+<div class="cal-day has-event"><div class="cal-date">4</div><div class="cal-event">🛠️ Tool of the Week</div></div>
+<div class="cal-day has-event"><div class="cal-date">5</div><div class="cal-event">🎓 Workshop: AI Art</div></div>
+<div class="cal-day"><div class="cal-date">6</div></div>
+<div class="cal-day has-event"><div class="cal-date">7</div><div class="cal-event">🏆 Member Spotlight</div></div>
+<div class="cal-day has-event"><div class="cal-date">8</div><div class="cal-event">🎨 Art Share Sunday</div></div>
+<div class="cal-day has-event"><div class="cal-date">9</div><div class="cal-event">💡 Monday Inspiration</div></div>
+<div class="cal-day"><div class="cal-date">10</div></div>
+<div class="cal-day has-event"><div class="cal-date">11</div><div class="cal-event">🛠️ Tool of the Week</div></div>
+<div class="cal-day has-event"><div class="cal-date">12</div><div class="cal-event">🎓 Workshop: Coding</div></div>
+<div class="cal-day"><div class="cal-date">13</div></div>
+<div class="cal-day has-event"><div class="cal-date">14</div><div class="cal-event">🏆 Member Spotlight</div></div>
+<div class="cal-day has-event"><div class="cal-date">15</div><div class="cal-event">🎨 Art Share Sunday</div></div>
+</div>
+<p style="color:#8b949e;font-size:.85em;margin-top:16px;text-align:center">Content is auto-generated based on community themes and scheduled via AI. All posts reviewed before publishing.</p>
+</div>
+
+<div id="moderation" class="tab-content">
+<h2 style="margin-bottom:16px"><span>🛡️</span> AI Moderation Log (Last 24h)</h2>
+<div class="log">
+<div class="log-entry"><div class="log-icon" style="background:#f8514922">🚫</div><div class="log-action"><strong>Spam blocked</strong> — Crypto scam link detected and removed from #general</div><div class="log-time">14 min ago</div></div>
+<div class="log-entry"><div class="log-icon" style="background:#f0883e22">⚠️</div><div class="log-action"><strong>Warning issued</strong> — User violated self-promo rules in #resources</div><div class="log-time">1h ago</div></div>
+<div class="log-entry"><div class="log-icon" style="background:#3fb95022">✅</div><div class="log-action"><strong>Auto-response</strong> — Answered FAQ about membership tiers in Telegram</div><div class="log-time">2h ago</div></div>
+<div class="log-entry"><div class="log-icon" style="background:#3fb95022">✅</div><div class="log-action"><strong>Welcome sent</strong> — Greeted 3 new members with personalized intros</div><div class="log-time">3h ago</div></div>
+<div class="log-entry"><div class="log-icon" style="background:#f8514922">🚫</div><div class="log-action"><strong>Raid protection</strong> — Blocked 12 bot accounts attempting to join</div><div class="log-time">5h ago</div></div>
+<div class="log-entry"><div class="log-icon" style="background:#58a6ff22">💬</div><div class="log-action"><strong>Engagement boost</strong> — Started discussion thread about new Midjourney update</div><div class="log-time">6h ago</div></div>
+</div>
+</div>
+
+<div id="welcome" class="tab-content">
+<h2 style="margin-bottom:24px"><span>👋</span> Automated Welcome Flow</h2>
+<div class="flow">
+<div class="flow-step"><div class="flow-num">1</div><h4>User Joins</h4><p>Discord invite or Telegram link</p></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-num">2</div><h4>AI Greeting</h4><p>Personalized welcome based on referral source</p></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-num">3</div><h4>Interest Survey</h4><p>Quick poll: Art, Tech, Music, or All?</p></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-num">4</div><h4>Channel Guide</h4><p>AI suggests channels based on interests</p></div>
+<div class="flow-arrow">→</div>
+<div class="flow-step"><div class="flow-num">5</div><h4>Intro Post</h4><p>Prompted to introduce themselves</p></div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer">
+<p>Built by <strong>Janis</strong> — Web Developer & Automation Specialist</p>
+<p style="margin-top:6px">Demo for Arts & Tech Community — Custom solution preview</p>
+</div>
+
+<script>
+function switchTab(e,id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));e.target.classList.add('active');document.getElementById(id).classList.add('active')}
+function ac(id,t,s=''){let el=document.getElementById(id),n=0,st=Math.ceil(t/25);let iv=setInterval(()=>{n=Math.min(n+st,t);el.textContent=n+s;if(n>=t)clearInterval(iv)},40)}
+setTimeout(()=>{ac('s1',847);ac('s2',234);ac('s3',312);ac('s4',8);ac('s5',156);ac('s6',89,'%')},400);
+</script>
+</body>
+</html>

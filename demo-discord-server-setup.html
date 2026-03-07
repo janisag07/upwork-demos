@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Discord Server Blueprint — RealPartners</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+.header{background:linear-gradient(135deg,#1a1f35,#0d1117);border-bottom:1px solid #21262d;padding:40px 0;text-align:center}
+.header h1{font-size:2.2em;background:linear-gradient(90deg,#58a6ff,#7c5cfc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header p{color:#8b949e;font-size:1.1em}
+.badge{display:inline-block;background:#238636;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8em;margin-top:12px}
+.container{max-width:1100px;margin:0 auto;padding:40px 20px}
+.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+.section:nth-child(2){animation-delay:.1s}.section:nth-child(3){animation-delay:.2s}.section:nth-child(4){animation-delay:.3s}.section:nth-child(5){animation-delay:.4s}
+h2{font-size:1.5em;margin-bottom:20px;color:#58a6ff;display:flex;align-items:center;gap:10px}
+h2 span{font-size:1.2em}
+
+/* Server Structure */
+.server{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.server-header{background:#1c2333;padding:16px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #21262d}
+.server-icon{width:48px;height:48px;background:linear-gradient(135deg,#58a6ff,#7c5cfc);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.4em;font-weight:700}
+.server-name{font-size:1.2em;font-weight:600}
+.server-members{color:#8b949e;font-size:.85em}
+.category{padding:0}
+.cat-header{padding:12px 20px 6px;font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8b949e;cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none}
+.cat-header:hover{color:#c9d1d9}
+.cat-header::before{content:'▾';font-size:.7em;transition:transform .2s}
+.cat-header.collapsed::before{transform:rotate(-90deg)}
+.channel-list{list-style:none}
+.channel-list.hidden{display:none}
+.channel{padding:8px 20px 8px 32px;display:flex;align-items:center;gap:8px;cursor:pointer;transition:background .15s}
+.channel:hover{background:#1c2333}
+.ch-icon{color:#8b949e;font-size:.9em;width:20px;text-align:center}
+.ch-name{color:#c9d1d9;font-size:.95em}
+.ch-badge{background:#58a6ff22;color:#58a6ff;padding:2px 8px;border-radius:10px;font-size:.7em;margin-left:auto}
+
+/* Roles */
+.roles-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.role-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:16px;transition:transform .2s,border-color .2s}
+.role-card:hover{transform:translateY(-2px);border-color:#58a6ff}
+.role-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:8px}
+.role-name{font-weight:600;font-size:1.05em}
+.role-perms{margin-top:10px;font-size:.85em;color:#8b949e}
+.role-perms li{padding:3px 0;list-style:none}
+.role-perms li::before{content:'✓ ';color:#3fb950}
+
+/* Permission Matrix */
+.matrix{overflow-x:auto}
+table{width:100%;border-collapse:collapse;background:#161b22;border-radius:10px;overflow:hidden}
+th,td{padding:10px 14px;text-align:center;border:1px solid #21262d;font-size:.85em}
+th{background:#1c2333;color:#8b949e;font-weight:600;text-transform:uppercase;font-size:.75em;letter-spacing:.5px}
+td:first-child{text-align:left;font-weight:500;color:#c9d1d9}
+.perm-yes{color:#3fb950;font-size:1.1em}.perm-no{color:#f85149;font-size:1.1em}
+
+/* Bots */
+.bots-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+.bot-card{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:20px;display:flex;gap:14px;transition:border-color .2s}
+.bot-card:hover{border-color:#7c5cfc}
+.bot-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3em;flex-shrink:0}
+.bot-info h3{font-size:1em;margin-bottom:4px}.bot-info p{font-size:.85em;color:#8b949e}
+.bot-tag{display:inline-block;background:#7c5cfc22;color:#7c5cfc;padding:2px 8px;border-radius:8px;font-size:.7em;margin-top:6px}
+
+/* Whop */
+.whop-flow{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
+.whop-step{background:#161b22;border:1px solid #21262d;border-radius:10px;padding:20px;flex:1;min-width:180px;max-width:240px;text-align:center;position:relative}
+.whop-step .step-num{background:#58a6ff;color:#0d1117;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;margin:0 auto 12px}
+.whop-step h4{margin-bottom:6px}.whop-step p{font-size:.85em;color:#8b949e}
+.whop-arrow{display:flex;align-items:center;color:#58a6ff;font-size:1.5em}
+
+.footer{text-align:center;padding:40px 20px;color:#484f58;border-top:1px solid #21262d;margin-top:40px;font-size:.9em}
+
+/* Tabs */
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #21262d;padding-bottom:0}
+.tab{padding:10px 20px;cursor:pointer;color:#8b949e;border-bottom:2px solid transparent;transition:all .2s;font-size:.95em}
+.tab:hover{color:#c9d1d9}.tab.active{color:#58a6ff;border-bottom-color:#58a6ff}
+.tab-content{display:none}.tab-content.active{display:block}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🎯 RealPartners — Discord Server Blueprint</h1>
+<p>Professional Sales Training & Placement Community</p>
+<span class="badge">✨ Custom Solution Preview</span>
+</div>
+<div class="container">
+
+<div class="section">
+<div class="tabs">
+<div class="tab active" onclick="switchTab(event,'structure')">📁 Server Structure</div>
+<div class="tab" onclick="switchTab(event,'roles')">👥 Roles & Permissions</div>
+<div class="tab" onclick="switchTab(event,'bots')">🤖 Bot Integrations</div>
+<div class="tab" onclick="switchTab(event,'whop')">💳 Whop Integration</div>
+</div>
+
+<div id="structure" class="tab-content active">
+<div class="server">
+<div class="server-header">
+<div class="server-icon">RP</div>
+<div><div class="server-name">RealPartners</div><div class="server-members">👥 0 members · 🟢 Setting up</div></div>
+</div>
+<div class="category">
+<div class="cat-header" onclick="toggleCat(this)">📋 Welcome & Info</div>
+<ul class="channel-list">
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">welcome</span><span class="ch-badge">Read Only</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">rules</span><span class="ch-badge">Read Only</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">announcements</span><span class="ch-badge">Read Only</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">verify-here</span><span class="ch-badge">Verification</span></li>
+</ul>
+</div>
+<div class="category">
+<div class="cat-header" onclick="toggleCat(this)">📢 General</div>
+<ul class="channel-list">
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">general-chat</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">introductions</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">wins-and-milestones</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">resources</span></li>
+</ul>
+</div>
+<div class="category">
+<div class="cat-header" onclick="toggleCat(this)">🎓 Training</div>
+<ul class="channel-list">
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">sdr-fundamentals</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">closing-techniques</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">role-play-practice</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">scripts-and-templates</span></li>
+<li class="channel"><span class="ch-icon">🔊</span><span class="ch-name">Live Coaching</span></li>
+<li class="channel"><span class="ch-icon">🔊</span><span class="ch-name">Role Play Room</span></li>
+</ul>
+</div>
+<div class="category">
+<div class="cat-header" onclick="toggleCat(this)">🎫 Support</div>
+<ul class="channel-list">
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">open-a-ticket</span><span class="ch-badge">Ticket Bot</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">faq</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">feedback</span></li>
+</ul>
+</div>
+<div class="category">
+<div class="cat-header" onclick="toggleCat(this)">🔒 Staff Only</div>
+<ul class="channel-list">
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">staff-chat</span><span class="ch-badge">Private</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">mod-log</span><span class="ch-badge">Private</span></li>
+<li class="channel"><span class="ch-icon">#</span><span class="ch-name">analytics</span><span class="ch-badge">Private</span></li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="roles" class="tab-content">
+<div class="roles-grid" style="margin-bottom:30px">
+<div class="role-card"><div><span class="role-dot" style="background:#f85149"></span><span class="role-name">👑 Admin</span></div><ul class="role-perms"><li>Full server access</li><li>Manage roles & channels</li><li>Ban/kick members</li><li>Access analytics</li></ul></div>
+<div class="role-card"><div><span class="role-dot" style="background:#f0883e"></span><span class="role-name">🎓 Coach</span></div><ul class="role-perms"><li>Training channels</li><li>Start voice sessions</li><li>Pin messages</li><li>Manage threads</li></ul></div>
+<div class="role-card"><div><span class="role-dot" style="background:#58a6ff"></span><span class="role-name">🛡️ Moderator</span></div><ul class="role-perms"><li>Mute/timeout users</li><li>Delete messages</li><li>View mod-log</li><li>Manage tickets</li></ul></div>
+<div class="role-card"><div><span class="role-dot" style="background:#3fb950"></span><span class="role-name">👤 Member</span></div><ul class="role-perms"><li>General & training channels</li><li>Join voice channels</li><li>Open support tickets</li><li>React & thread</li></ul></div>
+</div>
+<h2 style="font-size:1.2em"><span>📊</span> Permission Matrix</h2>
+<div class="matrix">
+<table>
+<tr><th>Channel</th><th>Admin</th><th>Coach</th><th>Moderator</th><th>Member</th></tr>
+<tr><td>#announcements (write)</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+<tr><td>#training channels</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td></tr>
+<tr><td>#staff-chat</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✗</td></tr>
+<tr><td>#mod-log</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-no">✗</td></tr>
+<tr><td>Manage Roles</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+<tr><td>Kick/Ban</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-yes">✓</td><td class="perm-no">✗</td></tr>
+<tr><td>Voice (start sessions)</td><td class="perm-yes">✓</td><td class="perm-yes">✓</td><td class="perm-no">✗</td><td class="perm-no">✗</td></tr>
+</table>
+</div>
+</div>
+
+<div id="bots" class="tab-content">
+<div class="bots-grid">
+<div class="bot-card"><div class="bot-icon" style="background:#5865f222;color:#5865f2">🤖</div><div class="bot-info"><h3>Carl-bot</h3><p>Reaction roles for self-assign, auto-moderation, custom embeds, welcome messages</p><div class="bot-tag">Moderation</div><div class="bot-tag">Reaction Roles</div></div></div>
+<div class="bot-card"><div class="bot-icon" style="background:#3fb95022;color:#3fb950">🎫</div><div class="bot-info"><h3>Ticket Tool</h3><p>Support ticket system with categories, transcripts, and staff assignment</p><div class="bot-tag">Support</div></div></div>
+<div class="bot-card"><div class="bot-icon" style="background:#f0883e22;color:#f0883e">📊</div><div class="bot-info"><h3>Statbot</h3><p>Server analytics, member growth tracking, channel activity stats</p><div class="bot-tag">Analytics</div></div></div>
+<div class="bot-card"><div class="bot-icon" style="background:#f8514922;color:#f85149">🛡️</div><div class="bot-info"><h3>MEE6</h3><p>Auto-moderation, welcome messages, leveling system, custom commands</p><div class="bot-tag">Moderation</div><div class="bot-tag">Leveling</div></div></div>
+</div>
+</div>
+
+<div id="whop" class="tab-content">
+<h2 style="margin-bottom:24px"><span>💳</span> Whop Subscription Flow</h2>
+<div class="whop-flow">
+<div class="whop-step"><div class="step-num">1</div><h4>User Joins</h4><p>Clicks invite link, lands in #welcome</p></div>
+<div class="whop-arrow">→</div>
+<div class="whop-step"><div class="step-num">2</div><h4>Verify</h4><p>Completes verification in #verify-here</p></div>
+<div class="whop-arrow">→</div>
+<div class="whop-step"><div class="step-num">3</div><h4>Subscribe</h4><p>Purchases access via Whop checkout</p></div>
+<div class="whop-arrow">→</div>
+<div class="whop-step"><div class="step-num">4</div><h4>Access</h4><p>Auto-assigned Member role, training unlocked</p></div>
+</div>
+<p style="text-align:center;color:#8b949e;margin-top:24px;font-size:.9em">Whop handles payments, Discord role assignment is fully automated via webhook integration.</p>
+</div>
+</div>
+</div>
+
+<div class="footer">
+<p>Built by <strong>Janis</strong> — Web Developer & Automation Specialist</p>
+<p style="margin-top:6px">Demo for RealPartners — Custom solution preview</p>
+</div>
+
+<script>
+function switchTab(e,id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));e.target.classList.add('active');document.getElementById(id).classList.add('active')}
+function toggleCat(el){el.classList.toggle('collapsed');el.nextElementSibling.classList.toggle('hidden')}
+</script>
+</body>
+</html>

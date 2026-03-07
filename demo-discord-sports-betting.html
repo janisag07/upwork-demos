@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Betting Discord Community — Server Blueprint</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0d1117;color:#e6edf3;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;line-height:1.6}
+.header{background:linear-gradient(135deg,#1a1525,#0d1117);border-bottom:1px solid #21262d;padding:40px 0;text-align:center}
+.header h1{font-size:2.2em;background:linear-gradient(90deg,#39d353,#26a641);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.header p{color:#8b949e;font-size:1.1em}
+.badge{display:inline-block;background:#238636;color:#fff;padding:4px 12px;border-radius:20px;font-size:.8em;margin-top:12px}
+.container{max-width:1100px;margin:0 auto;padding:40px 20px}
+.section{margin-bottom:48px;opacity:0;transform:translateY(20px);animation:fadeUp .6s ease forwards}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+h2{font-size:1.5em;margin-bottom:20px;color:#39d353;display:flex;align-items:center;gap:10px}
+
+.tabs{display:flex;gap:4px;margin-bottom:20px;border-bottom:1px solid #21262d;flex-wrap:wrap}
+.tab{padding:10px 18px;cursor:pointer;color:#8b949e;border-bottom:2px solid transparent;transition:all .2s;font-size:.9em}
+.tab:hover{color:#c9d1d9}.tab.active{color:#39d353;border-bottom-color:#39d353}
+.tab-content{display:none}.tab-content.active{display:block}
+
+/* Server */
+.server{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden}
+.srv-header{background:#1c2333;padding:14px 20px;display:flex;align-items:center;gap:12px;border-bottom:1px solid #21262d}
+.srv-icon{width:48px;height:48px;background:linear-gradient(135deg,#39d353,#26a641);border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:1.5em}
+.cat-h{padding:12px 20px 6px;font-size:.75em;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#8b949e;cursor:pointer;display:flex;align-items:center;gap:6px}
+.cat-h:hover{color:#c9d1d9}
+.ch{padding:8px 20px 8px 32px;display:flex;align-items:center;gap:8px;transition:background .15s;font-size:.9em}
+.ch:hover{background:#1c2333}
+.ch-i{color:#8b949e;width:18px;text-align:center;font-size:.85em}
+.ch-n{color:#c9d1d9}
+.ch-b{background:#39d35322;color:#39d353;padding:2px 8px;border-radius:10px;font-size:.65em;margin-left:auto}
+
+/* Tiers */
+.tiers{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:20px}
+.tier{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px;text-align:center;transition:transform .2s,border-color .2s}
+.tier:hover{transform:translateY(-3px)}
+.tier.popular{border-color:#39d353;position:relative}
+.tier.popular::after{content:'MOST POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#39d353;color:#0d1117;padding:2px 12px;border-radius:10px;font-size:.7em;font-weight:700}
+.tier-name{font-size:1.3em;font-weight:700;margin-bottom:4px}
+.tier-price{font-size:2em;font-weight:700;color:#39d353;margin:12px 0}
+.tier-price span{font-size:.4em;color:#8b949e;font-weight:400}
+.tier-features{list-style:none;text-align:left;margin-top:16px}
+.tier-features li{padding:6px 0;font-size:.85em;color:#c9d1d9;border-bottom:1px solid #21262d11}
+.tier-features li::before{content:'✓ ';color:#39d353}
+
+/* Pick Card */
+.pick-card{background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;max-width:500px}
+.pick-header{background:linear-gradient(135deg,#1c2333,#161b22);padding:16px 20px;border-bottom:1px solid #21262d}
+.pick-header h3{color:#39d353;font-size:1.1em;display:flex;align-items:center;gap:8px}
+.pick-body{padding:20px}
+.pick-match{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.pick-team{text-align:center;flex:1}
+.pick-team-name{font-weight:700;font-size:1.1em;margin-top:6px}
+.pick-vs{color:#8b949e;font-weight:700}
+.pick-details{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.pick-detail{background:#0d1117;border-radius:8px;padding:10px;text-align:center}
+.pick-detail-label{font-size:.7em;color:#8b949e;text-transform:uppercase;letter-spacing:.5px}
+.pick-detail-value{font-size:1.1em;font-weight:700;color:#39d353;margin-top:2px}
+.confidence{display:flex;gap:3px;justify-content:center;margin-top:4px}
+.conf-dot{width:8px;height:8px;border-radius:50%;background:#21262d}
+.conf-dot.active{background:#39d353}
+
+/* Revenue */
+.rev-calc{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:24px}
+.rev-row{display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #21262d11;font-size:.95em}
+.rev-total{display:flex;justify-content:space-between;padding:14px 0;font-size:1.2em;font-weight:700;color:#39d353;border-top:2px solid #21262d}
+
+/* Chart */
+.chart-container{background:#161b22;border:1px solid #21262d;border-radius:12px;padding:20px}
+.bars{display:flex;align-items:end;gap:8px;height:150px;margin-top:10px}
+.bar-group{flex:1;text-align:center}
+.bar{background:linear-gradient(to top,#39d353,#26a641);border-radius:4px 4px 0 0;margin:0 auto;width:70%;transition:height 1.5s ease}
+.bar-label{font-size:.7em;color:#8b949e;margin-top:6px}
+
+.footer{text-align:center;padding:40px 20px;color:#484f58;border-top:1px solid #21262d;margin-top:40px;font-size:.9em}
+</style>
+</head>
+<body>
+<div class="header">
+<h1>🏈 Sports Betting Community</h1>
+<p>Discord Server + Whop Subscription Setup</p>
+<span class="badge">Full Blueprint & Revenue Model</span>
+</div>
+<div class="container">
+
+<div class="section">
+<div class="tabs">
+<div class="tab active" onclick="switchTab(event,'structure')">📁 Server Structure</div>
+<div class="tab" onclick="switchTab(event,'tiers')">💎 Subscription Tiers</div>
+<div class="tab" onclick="switchTab(event,'pick')">🎯 Daily Pick Preview</div>
+<div class="tab" onclick="switchTab(event,'revenue')">💰 Revenue Model</div>
+<div class="tab" onclick="switchTab(event,'growth')">📈 Growth Projection</div>
+</div>
+
+<div id="structure" class="tab-content active">
+<div class="server">
+<div class="srv-header">
+<div class="srv-icon">🏆</div>
+<div><div style="font-weight:600;font-size:1.1em">Sports Betting Hub</div><div style="color:#8b949e;font-size:.8em">👥 Premium Community</div></div>
+</div>
+<div class="cat-h">📋 Welcome</div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">welcome</span><span class="ch-b">Read Only</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">rules</span><span class="ch-b">Read Only</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">verify-subscription</span><span class="ch-b">Whop</span></div>
+
+<div class="cat-h">🎯 Daily Picks (All Members)</div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">free-picks</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">results-tracker</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">general-discussion</span></div>
+
+<div class="cat-h">🔥 Pro Zone ($29/mo)</div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">pro-picks</span><span class="ch-b">Pro+</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">nba-analysis</span><span class="ch-b">Pro+</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">nfl-analysis</span><span class="ch-b">Pro+</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">live-game-chat</span><span class="ch-b">Pro+</span></div>
+
+<div class="cat-h">👑 VIP Lounge ($99/mo)</div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">vip-premium-picks</span><span class="ch-b">VIP</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">bankroll-management</span><span class="ch-b">VIP</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">1-on-1-mentoring</span><span class="ch-b">VIP</span></div>
+<div class="ch"><span class="ch-i">🔊</span><span class="ch-n">VIP Voice Lounge</span><span class="ch-b">VIP</span></div>
+
+<div class="cat-h">📚 Education</div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">betting-basics</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">strategy-guides</span></div>
+<div class="ch"><span class="ch-i">#</span><span class="ch-n">bankroll-tips</span></div>
+</div>
+</div>
+
+<div id="tiers" class="tab-content">
+<div class="tiers">
+<div class="tier">
+<div class="tier-name">🆓 Free</div>
+<div class="tier-price">$0<span>/mo</span></div>
+<ul class="tier-features">
+<li>1 free pick per day</li>
+<li>Results tracker access</li>
+<li>General discussion</li>
+<li>Education channels</li>
+<li>Community access</li>
+</ul>
+</div>
+<div class="tier popular">
+<div class="tier-name">🔥 Pro</div>
+<div class="tier-price">$29<span>/mo</span></div>
+<ul class="tier-features">
+<li>All free features</li>
+<li>3-5 premium picks daily</li>
+<li>NBA & NFL deep analysis</li>
+<li>Live game chat</li>
+<li>Win rate tracking</li>
+<li>Discord role badge</li>
+</ul>
+</div>
+<div class="tier">
+<div class="tier-name">👑 VIP</div>
+<div class="tier-price">$99<span>/mo</span></div>
+<ul class="tier-features">
+<li>All Pro features</li>
+<li>Exclusive high-confidence picks</li>
+<li>Bankroll management coaching</li>
+<li>1-on-1 mentoring sessions</li>
+<li>Private VIP voice lounge</li>
+<li>Early access to all picks</li>
+</ul>
+</div>
+</div>
+</div>
+
+<div id="pick" class="tab-content">
+<h2 style="margin-bottom:16px"><span>🎯</span> Sample Daily Pick Embed</h2>
+<div class="pick-card">
+<div class="pick-header"><h3>🎯 PRO PICK — NBA</h3></div>
+<div class="pick-body">
+<div class="pick-match">
+<div class="pick-team"><div style="font-size:2em">🏀</div><div class="pick-team-name">Lakers</div><div style="color:#8b949e;font-size:.8em">28-19</div></div>
+<div class="pick-vs">VS</div>
+<div class="pick-team"><div style="font-size:2em">🏀</div><div class="pick-team-name">Celtics</div><div style="color:#8b949e;font-size:.8em">35-12</div></div>
+</div>
+<div class="pick-details">
+<div class="pick-detail"><div class="pick-detail-label">Pick</div><div class="pick-detail-value">Celtics -4.5</div></div>
+<div class="pick-detail"><div class="pick-detail-label">Odds</div><div class="pick-detail-value">-110</div></div>
+<div class="pick-detail"><div class="pick-detail-label">Units</div><div class="pick-detail-value">2U</div></div>
+<div class="pick-detail">
+<div class="pick-detail-label">Confidence</div>
+<div class="confidence"><div class="conf-dot active"></div><div class="conf-dot active"></div><div class="conf-dot active"></div><div class="conf-dot active"></div><div class="conf-dot"></div></div>
+</div>
+</div>
+<div style="margin-top:16px;padding:14px;background:#0d1117;border-radius:8px;font-size:.85em;color:#c9d1d9">
+<strong style="color:#39d353">📊 Analysis:</strong> Celtics are 8-2 in their last 10 home games. Lakers missing AD tonight. Boston's defense ranks #2 in opponent FG% this month. Value play at -4.5.
+</div>
+</div>
+</div>
+</div>
+
+<div id="revenue" class="tab-content">
+<h2 style="margin-bottom:16px"><span>💰</span> Monthly Revenue Projection</h2>
+<div class="rev-calc">
+<div class="rev-row"><span>🆓 Free Members (500)</span><span style="color:#8b949e">$0</span></div>
+<div class="rev-row"><span>🔥 Pro Members (80 × $29)</span><span style="color:#39d353">$2,320</span></div>
+<div class="rev-row"><span>👑 VIP Members (15 × $99)</span><span style="color:#39d353">$1,485</span></div>
+<div class="rev-row"><span style="color:#8b949e">Whop Platform Fee (3%)</span><span style="color:#f85149">-$114</span></div>
+<div class="rev-total"><span>Monthly Revenue</span><span>$3,691</span></div>
+</div>
+<p style="color:#8b949e;font-size:.85em;margin-top:16px;text-align:center">Based on conservative 16% free-to-Pro and 3% free-to-VIP conversion rates</p>
+</div>
+
+<div id="growth" class="tab-content">
+<h2 style="margin-bottom:16px"><span>📈</span> 6-Month Growth Projection</h2>
+<div class="chart-container">
+<h3 style="font-size:1em;color:#8b949e">Total Members</h3>
+<div class="bars">
+<div class="bar-group"><div class="bar" id="b1" style="height:0"></div><div class="bar-label">M1</div></div>
+<div class="bar-group"><div class="bar" id="b2" style="height:0"></div><div class="bar-label">M2</div></div>
+<div class="bar-group"><div class="bar" id="b3" style="height:0"></div><div class="bar-label">M3</div></div>
+<div class="bar-group"><div class="bar" id="b4" style="height:0"></div><div class="bar-label">M4</div></div>
+<div class="bar-group"><div class="bar" id="b5" style="height:0"></div><div class="bar-label">M5</div></div>
+<div class="bar-group"><div class="bar" id="b6" style="height:0"></div><div class="bar-label">M6</div></div>
+</div>
+<div style="display:flex;justify-content:space-around;margin-top:4px">
+<span style="font-size:.75em;color:#39d353">120</span>
+<span style="font-size:.75em;color:#39d353">280</span>
+<span style="font-size:.75em;color:#39d353">450</span>
+<span style="font-size:.75em;color:#39d353">680</span>
+<span style="font-size:.75em;color:#39d353">900</span>
+<span style="font-size:.75em;color:#39d353">1,200</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="footer">
+<p>Built by <strong>Janis</strong> — Web Developer & Automation Specialist</p>
+<p style="margin-top:6px">Demo for Sports Betting Discord — Custom solution preview</p>
+</div>
+
+<script>
+function switchTab(e,id){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));e.target.classList.add('active');document.getElementById(id).classList.add('active')}
+setTimeout(()=>{const heights=[15,28,45,68,90,120];heights.forEach((h,i)=>{setTimeout(()=>{document.getElementById('b'+(i+1)).style.height=h+'px'},i*200)})},500);
+</script>
+</body>
+</html>
