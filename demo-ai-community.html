@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Community Manager Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #2a2a3e;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            color: #64ffda;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1e1e2e 0%, #2a2a3e 100%);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #3a3a4a;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--accent-color);
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #888;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 8px;
+        }
+        
+        .stat-change {
+            font-size: 13px;
+            color: #4ade80;
+        }
+        
+        .stat-change.negative {
+            color: #ef4444;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #2a2a3e;
+        }
+        
+        .panel-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .live-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #4ade80;
+        }
+        
+        .pulse {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+        
+        .activity-feed {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            background: #252535;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 3px solid #64ffda;
+            opacity: 0;
+            animation: slideIn 0.5s forwards;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .activity-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .platform-badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .platform-badge.discord {
+            background: #5865f2;
+            color: white;
+        }
+        
+        .platform-badge.telegram {
+            background: #0088cc;
+            color: white;
+        }
+        
+        .activity-user {
+            font-weight: 600;
+            color: #fff;
+        }
+        
+        .activity-time {
+            font-size: 11px;
+            color: #666;
+            margin-left: auto;
+        }
+        
+        .activity-message {
+            font-size: 14px;
+            color: #bbb;
+            margin-bottom: 8px;
+        }
+        
+        .ai-response {
+            background: #1a1a2a;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            border-left: 2px solid #4ade80;
+            color: #4ade80;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .metric-box {
+            background: #252535;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .progress-bar {
+            background: #252535;
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #64ffda 0%, #4ade80 100%);
+            transition: width 0.5s;
+        }
+        
+        .channel-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .channel-item {
+            background: #252535;
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .channel-name {
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 2px solid #2a2a3e;
+            margin-top: 40px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .stats-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 AI Community Manager Dashboard</h1>
+            <p>Built by Janis A. — Web Developer & Automation Specialist</p>
+        </header>
+        
+        <div class="stats-overview">
+            <div class="stat-card" style="--accent-color: #5865f2;">
+                <div class="stat-label">💬 Discord Members</div>
+                <div class="stat-value">2,847</div>
+                <div class="stat-change">↗ +127 this week</div>
+            </div>
+            
+            <div class="stat-card" style="--accent-color: #0088cc;">
+                <div class="stat-label">✈️ Telegram Members</div>
+                <div class="stat-value">1,523</div>
+                <div class="stat-change">↗ +89 this week</div>
+            </div>
+            
+            <div class="stat-card" style="--accent-color: #4ade80;">
+                <div class="stat-label">🤖 AI Response Rate</div>
+                <div class="stat-value">94.2%</div>
+                <div class="stat-change">↗ +2.3% from last week</div>
+            </div>
+            
+            <div class="stat-card" style="--accent-color: #fbbf24;">
+                <div class="stat-label">📊 Engagement Score</div>
+                <div class="stat-value">8.7/10</div>
+                <div class="stat-change">↗ +0.4 from last week</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-header">
+                    📡 Live Activity Feed
+                    <div class="live-indicator">
+                        <div class="pulse"></div>
+                        LIVE
+                    </div>
+                </div>
+                
+                <div class="activity-feed" id="feed"></div>
+            </div>
+            
+            <div>
+                <div class="panel" style="margin-bottom: 20px;">
+                    <div class="panel-header">📈 Engagement Metrics</div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-box">
+                            <div class="metric-value">1,247</div>
+                            <div class="metric-label">Messages Today</div>
+                        </div>
+                        
+                        <div class="metric-box">
+                            <div class="metric-value">892</div>
+                            <div class="metric-label">AI Responses</div>
+                        </div>
+                        
+                        <div class="metric-box">
+                            <div class="metric-value">2.4min</div>
+                            <div class="metric-label">Avg Response Time</div>
+                        </div>
+                        
+                        <div class="metric-box">
+                            <div class="metric-value">97%</div>
+                            <div class="metric-label">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="panel">
+                    <div class="panel-header">🎯 Top Channels</div>
+                    
+                    <div class="channel-stats">
+                        <div class="channel-item">
+                            <div class="channel-name">
+                                <span class="platform-badge discord">DISCORD</span>
+                                #general
+                            </div>
+                            <div style="font-size: 13px; color: #888; margin-bottom: 8px;">437 messages today</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 87%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="channel-item">
+                            <div class="channel-name">
+                                <span class="platform-badge telegram">TELEGRAM</span>
+                                Main Chat
+                            </div>
+                            <div style="font-size: 13px; color: #888; margin-bottom: 8px;">312 messages today</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 62%;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="channel-item">
+                            <div class="channel-name">
+                                <span class="platform-badge discord">DISCORD</span>
+                                #support
+                            </div>
+                            <div style="font-size: 13px; color: #888; margin-bottom: 8px;">189 messages today</div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 38%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            This is an illustrative demo. Data shown is fictional.
+        </footer>
+    </div>
+    
+    <script>
+        const activities = [
+            {platform: 'discord', user: 'Alex_M', message: 'How do I reset my password?', response: 'You can reset your password by visiting the account settings page and clicking "Forgot Password". A reset link will be sent to your email.'},
+            {platform: 'telegram', user: 'Sarah K.', message: 'What are the premium features?', response: 'Premium features include: Advanced analytics, priority support, custom branding, unlimited automation workflows, and API access.'},
+            {platform: 'discord', user: 'Mike_Dev', message: 'Is there an API available?', response: 'Yes! Our REST API is available for all premium users. You can find the documentation at docs.example.com/api'},
+            {platform: 'telegram', user: 'Lisa W.', message: 'When is the next update?', response: 'The next major update is scheduled for next Tuesday. It will include new automation features and performance improvements.'},
+            {platform: 'discord', user: 'Tom_123', message: 'Can I integrate with Zapier?', response: 'Absolutely! We have native Zapier integration. You can connect over 3,000+ apps to automate your workflows.'},
+            {platform: 'telegram', user: 'Emma R.', message: 'How many team members can I add?', response: 'The free plan supports up to 3 team members. Premium plans offer unlimited team members with role-based permissions.'},
+        ];
+        
+        let activityIndex = 0;
+        
+        function addActivity() {
+            const activity = activities[activityIndex % activities.length];
+            const time = new Date().toLocaleTimeString();
+            
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+                <div class="activity-header">
+                    <span class="platform-badge ${activity.platform}">${activity.platform.toUpperCase()}</span>
+                    <span class="activity-user">${activity.user}</span>
+                    <span class="activity-time">${time}</span>
+                </div>
+                <div class="activity-message">"${activity.message}"</div>
+                <div class="ai-response">🤖 AI: ${activity.response}</div>
+            `;
+            
+            const feed = document.getElementById('feed');
+            feed.insertBefore(item, feed.firstChild);
+            
+            // Keep only last 10 items
+            while (feed.children.length > 10) {
+                feed.removeChild(feed.lastChild);
+            }
+            
+            activityIndex++;
+        }
+        
+        // Add initial activities
+        for (let i = 0; i < 5; i++) {
+            setTimeout(() => addActivity(), i * 300);
+        }
+        
+        // Add new activity every 5 seconds
+        setInterval(addActivity, 5000);
+        
+        // Animate metrics
+        setInterval(() => {
+            const messageCount = document.querySelector('.metric-box:nth-child(1) .metric-value');
+            if (messageCount) {
+                const current = parseInt(messageCount.textContent);
+                messageCount.textContent = current + Math.floor(Math.random() * 3);
+            }
+        }, 3000);
+    </script>
+</body>
+</html>

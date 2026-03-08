@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Infoprodukt Sales Funnel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #2a2a3e;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            color: #5865f2;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .funnel-visualization {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 40px;
+            border: 1px solid #2a2a3e;
+            margin-bottom: 30px;
+        }
+        
+        .funnel-title {
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 40px;
+        }
+        
+        .funnel-stages {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .funnel-stage {
+            background: linear-gradient(90deg, var(--stage-color) 0%, var(--stage-color-dark) 100%);
+            padding: 25px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: var(--stage-width);
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .funnel-stage:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        
+        .stage-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .stage-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .stage-count {
+            font-size: 24px;
+            font-weight: 700;
+            color: white;
+        }
+        
+        .stage-conversion {
+            font-size: 13px;
+            color: rgba(255,255,255,0.8);
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .panel {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #2a2a3e;
+        }
+        
+        .panel-header {
+            font-size: 18px;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 20px;
+        }
+        
+        .server-preview {
+            background: #2b2d31;
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .channel-list {
+            list-style: none;
+        }
+        
+        .channel {
+            padding: 10px;
+            margin-bottom: 6px;
+            background: #313338;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .channel:hover {
+            background: #404249;
+        }
+        
+        .channel.locked {
+            opacity: 0.5;
+        }
+        
+        .flow-container {
+            background: #252535;
+            border-radius: 8px;
+            padding: 25px;
+        }
+        
+        .flow-step {
+            background: #1a1a2a;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid var(--step-color);
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: '↓';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 20px;
+            color: #64ffda;
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .step-title {
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        
+        .step-description {
+            font-size: 14px;
+            color: #888;
+        }
+        
+        .automation-item {
+            background: #252535;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .automation-icon {
+            font-size: 28px;
+        }
+        
+        .automation-content {
+            flex: 1;
+        }
+        
+        .automation-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #fff;
+        }
+        
+        .automation-desc {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        .automation-status {
+            font-size: 11px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            background: #4ade80;
+            color: #0f0f23;
+            font-weight: 600;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #2a2a3e;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #64ffda;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #888;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 2px solid #2a2a3e;
+            margin-top: 40px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 1200px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>💰 Discord Infoprodukt Sales Funnel</h1>
+            <p>Built by Janis A. — Web Developer & Automation Specialist</p>
+        </header>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">2,847</div>
+                <div class="stat-label">Total Visitors</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">1,523</div>
+                <div class="stat-label">Active Members</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-value">347</div>
+                <div class="stat-label">Buyers (22.8%)</div>
+            </div>
+        </div>
+        
+        <div class="funnel-visualization">
+            <div class="funnel-title">📊 Sales Funnel Visualization</div>
+            
+            <div class="funnel-stages">
+                <div class="funnel-stage" style="--stage-width: 100%; --stage-color: #5865f2; --stage-color-dark: #4752c4;">
+                    <div class="stage-header">
+                        <div class="stage-name">👋 Visitor</div>
+                        <div class="stage-count">2,847</div>
+                    </div>
+                    <div class="stage-conversion">100% of traffic</div>
+                </div>
+                
+                <div class="funnel-stage" style="--stage-width: 85%; --stage-color: #3ba55d; --stage-color-dark: #2d7d46;">
+                    <div class="stage-header">
+                        <div class="stage-name">🎯 Server Join</div>
+                        <div class="stage-count">2,418</div>
+                    </div>
+                    <div class="stage-conversion">84.9% conversion</div>
+                </div>
+                
+                <div class="funnel-stage" style="--stage-width: 70%; --stage-color: #faa61a; --stage-color-dark: #d88b15;">
+                    <div class="stage-header">
+                        <div class="stage-name">✅ Role Selected</div>
+                        <div class="stage-count">1,983</div>
+                    </div>
+                    <div class="stage-conversion">82.0% conversion</div>
+                </div>
+                
+                <div class="funnel-stage" style="--stage-width: 55%; --stage-color: #eb459e; --stage-color-dark: #c9377e;">
+                    <div class="stage-header">
+                        <div class="stage-name">👤 Active Member</div>
+                        <div class="stage-count">1,523</div>
+                    </div>
+                    <div class="stage-conversion">76.8% conversion</div>
+                </div>
+                
+                <div class="funnel-stage" style="--stage-width: 40%; --stage-color: #64ffda; --stage-color-dark: #4ecdc4;">
+                    <div class="stage-header">
+                        <div class="stage-name">🔓 Premium Access</div>
+                        <div class="stage-count">612</div>
+                    </div>
+                    <div class="stage-conversion">40.2% conversion</div>
+                </div>
+                
+                <div class="funnel-stage" style="--stage-width: 25%; --stage-color: #4ade80; --stage-color-dark: #22c55e;">
+                    <div class="stage-header">
+                        <div class="stage-name">💳 Buyer</div>
+                        <div class="stage-count">347</div>
+                    </div>
+                    <div class="stage-conversion">56.7% conversion • 12.2% overall</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <div class="panel-header">🏠 Server Structure</div>
+                
+                <div class="server-preview">
+                    <div style="font-weight: 700; margin-bottom: 15px; font-size: 16px; color: #fff;">📚 Premium Course Server</div>
+                    
+                    <ul class="channel-list">
+                        <li class="channel">📢 announcements</li>
+                        <li class="channel">👋 welcome</li>
+                        <li class="channel">📋 rules</li>
+                        <li class="channel">🎯 choose-your-path</li>
+                        <li class="channel">💬 general-chat</li>
+                        <li class="channel locked">🔒 premium-content</li>
+                        <li class="channel locked">🔒 exclusive-resources</li>
+                        <li class="channel locked">🔒 vip-lounge</li>
+                        <li class="channel">🎫 support-tickets</li>
+                        <li class="channel">💰 purchase-access</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">🔄 Automated Welcome Flow</div>
+                
+                <div class="flow-container">
+                    <div class="flow-step" style="--step-color: #5865f2;">
+                        <div class="step-title">1. User Joins Server</div>
+                        <div class="step-description">Bot sends personalized welcome DM with server overview</div>
+                    </div>
+                    
+                    <div class="flow-step" style="--step-color: #3ba55d;">
+                        <div class="step-title">2. Role Selection</div>
+                        <div class="step-description">Interactive message with role buttons (Beginner, Intermediate, Expert)</div>
+                    </div>
+                    
+                    <div class="flow-step" style="--step-color: #faa61a;">
+                        <div class="step-title">3. Welcome Message</div>
+                        <div class="step-description">Tailored welcome based on selected role with relevant resources</div>
+                    </div>
+                    
+                    <div class="flow-step" style="--step-color: #eb459e;">
+                        <div class="step-title">4. Free Content Access</div>
+                        <div class="step-description">Access to community channels and free learning materials</div>
+                    </div>
+                    
+                    <div class="flow-step" style="--step-color: #64ffda;">
+                        <div class="step-title">5. Premium Upsell</div>
+                        <div class="step-description">After 3 days, bot sends premium offer with testimonials</div>
+                    </div>
+                    
+                    <div class="flow-step" style="--step-color: #4ade80;">
+                        <div class="step-title">6. Purchase & Unlock</div>
+                        <div class="step-description">Payment verification → instant premium role assignment</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <div class="panel-header">⚙️ Bot Automations</div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 15px;">
+                <div class="automation-item">
+                    <div class="automation-icon">👋</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Welcome Automation</div>
+                        <div class="automation-desc">DM new members, assign roles, send onboarding guide</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+                
+                <div class="automation-item">
+                    <div class="automation-icon">💰</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Payment Verification</div>
+                        <div class="automation-desc">Verify payments via webhook, auto-assign premium role</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+                
+                <div class="automation-item">
+                    <div class="automation-icon">🎯</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Drip Campaign</div>
+                        <div class="automation-desc">Send educational content over 7 days</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+                
+                <div class="automation-item">
+                    <div class="automation-icon">🎫</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Support Tickets</div>
+                        <div class="automation-desc">Auto-create private channels for support requests</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+                
+                <div class="automation-item">
+                    <div class="automation-icon">📊</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Analytics Tracking</div>
+                        <div class="automation-desc">Track engagement, conversions, and retention</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+                
+                <div class="automation-item">
+                    <div class="automation-icon">🔔</div>
+                    <div class="automation-content">
+                        <div class="automation-title">Engagement Reminders</div>
+                        <div class="automation-desc">Remind inactive members about new content</div>
+                    </div>
+                    <div class="automation-status">ACTIVE</div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            This is an illustrative demo. Data shown is fictional.
+        </footer>
+    </div>
+    
+    <script>
+        // Animate funnel numbers
+        setInterval(() => {
+            const visitors = document.querySelectorAll('.funnel-stage .stage-count');
+            visitors.forEach((el, i) => {
+                const current = parseInt(el.textContent.replace(',', ''));
+                const change = Math.floor(Math.random() * (i === 0 ? 5 : 2));
+                el.textContent = (current + change).toLocaleString();
+            });
+        }, 5000);
+        
+        // Animate stat cards
+        setInterval(() => {
+            const statValues = document.querySelectorAll('.stat-card .stat-value');
+            statValues[0].textContent = (parseInt(statValues[0].textContent.replace(',', '')) + Math.floor(Math.random() * 3)).toLocaleString();
+        }, 3000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenClaw + n8n Workflow Debug Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #2a2a3e;
+            margin-bottom: 40px;
+        }
+        
+        header h1 {
+            font-size: 28px;
+            color: #64ffda;
+            margin-bottom: 10px;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: #64ffda;
+            color: #0f0f23;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #4ecdc4;
+            transform: translateY(-2px);
+        }
+        
+        .btn.debug {
+            background: #fbbf24;
+        }
+        
+        .btn.debug:hover {
+            background: #f59e0b;
+        }
+        
+        .workflow-canvas {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 40px;
+            min-height: 500px;
+            border: 1px solid #2a2a3e;
+            position: relative;
+            overflow-x: auto;
+        }
+        
+        .workflow-nodes {
+            display: flex;
+            gap: 80px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: nowrap;
+            min-width: fit-content;
+        }
+        
+        .node {
+            background: #252535;
+            border-radius: 12px;
+            padding: 20px;
+            width: 180px;
+            text-align: center;
+            border: 2px solid #3a3a4a;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .node.error {
+            border-color: #ef4444;
+            background: #2a1a1a;
+        }
+        
+        .node.success {
+            border-color: #4ade80;
+            background: #1a2a1a;
+        }
+        
+        .node.processing {
+            border-color: #fbbf24;
+            animation: nodeProcess 1.5s infinite;
+        }
+        
+        @keyframes nodeProcess {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .node-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .node-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #e0e0e0;
+        }
+        
+        .node-status {
+            font-size: 11px;
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: inline-block;
+            margin-top: 8px;
+        }
+        
+        .node-status.error {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .node-status.success {
+            background: #4ade80;
+            color: #0f0f23;
+        }
+        
+        .node-status.pending {
+            background: #666;
+            color: white;
+        }
+        
+        .connector {
+            position: absolute;
+            height: 2px;
+            background: #3a3a4a;
+            top: 50%;
+            right: -82px;
+            width: 80px;
+        }
+        
+        .connector.active {
+            background: #64ffda;
+            animation: flowAnimation 1.5s infinite;
+        }
+        
+        @keyframes flowAnimation {
+            0% { opacity: 0.3; }
+            50% { opacity: 1; }
+            100% { opacity: 0.3; }
+        }
+        
+        .log-panel {
+            background: #1e1e2e;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px;
+            border: 1px solid #2a2a3e;
+        }
+        
+        .log-title {
+            font-size: 18px;
+            color: #64ffda;
+            margin-bottom: 15px;
+        }
+        
+        .log-content {
+            background: #0a0a15;
+            border-radius: 8px;
+            padding: 15px;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+        
+        .log-line {
+            margin-bottom: 6px;
+            opacity: 0;
+            animation: fadeIn 0.5s forwards;
+        }
+        
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+        
+        .log-line.error { color: #ef4444; }
+        .log-line.success { color: #4ade80; }
+        .log-line.info { color: #64ffda; }
+        .log-line.warning { color: #fbbf24; }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            border-top: 2px solid #2a2a3e;
+            margin-top: 40px;
+            color: #666;
+            font-size: 13px;
+        }
+        
+        @media (max-width: 768px) {
+            .workflow-canvas {
+                padding: 20px;
+            }
+            
+            .workflow-nodes {
+                gap: 40px;
+            }
+            
+            .connector {
+                right: -42px;
+                width: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 OpenClaw + n8n Workflow Debug Dashboard</h1>
+            <p>Built by Janis A. — Web Developer & Automation Specialist</p>
+        </header>
+        
+        <div class="controls">
+            <button class="btn" onclick="runWorkflow()">▶️ Run Workflow</button>
+            <button class="btn debug" onclick="debugWorkflow()">🐛 Debug Mode</button>
+            <button class="btn" onclick="resetWorkflow()">🔄 Reset</button>
+        </div>
+        
+        <div class="workflow-canvas">
+            <div class="workflow-nodes">
+                <div class="node" id="node1">
+                    <div class="connector"></div>
+                    <div class="node-icon">📨</div>
+                    <div class="node-title">Webhook</div>
+                    <div class="node-status pending">Pending</div>
+                </div>
+                
+                <div class="node" id="node2">
+                    <div class="connector"></div>
+                    <div class="node-icon">🔍</div>
+                    <div class="node-title">Parse Data</div>
+                    <div class="node-status pending">Pending</div>
+                </div>
+                
+                <div class="node error" id="node3">
+                    <div class="connector"></div>
+                    <div class="node-icon">⚙️</div>
+                    <div class="node-title">Process</div>
+                    <div class="node-status error">Error</div>
+                </div>
+                
+                <div class="node" id="node4">
+                    <div class="connector"></div>
+                    <div class="node-icon">📊</div>
+                    <div class="node-title">Save to DB</div>
+                    <div class="node-status pending">Pending</div>
+                </div>
+                
+                <div class="node" id="node5">
+                    <div class="node-icon">✅</div>
+                    <div class="node-title">Send Response</div>
+                    <div class="node-status pending">Pending</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="log-panel">
+            <div class="log-title">📋 Debug Log</div>
+            <div class="log-content" id="log"></div>
+        </div>
+        
+        <footer>
+            This is an illustrative demo. Data shown is fictional.
+        </footer>
+    </div>
+    
+    <script>
+        let logs = [];
+        
+        function addLog(message, type = 'info') {
+            const time = new Date().toLocaleTimeString();
+            logs.push(`<div class="log-line ${type}">[${time}] ${message}</div>`);
+            document.getElementById('log').innerHTML = logs.join('');
+            document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
+        }
+        
+        function updateNode(nodeId, status, statusText) {
+            const node = document.getElementById(nodeId);
+            node.className = `node ${status}`;
+            const statusEl = node.querySelector('.node-status');
+            statusEl.className = `node-status ${status}`;
+            statusEl.textContent = statusText;
+        }
+        
+        function runWorkflow() {
+            addLog('🚀 Workflow execution started', 'info');
+            resetWorkflow();
+            
+            setTimeout(() => {
+                updateNode('node1', 'success', 'Success');
+                addLog('✅ Webhook received data', 'success');
+            }, 500);
+            
+            setTimeout(() => {
+                updateNode('node2', 'success', 'Success');
+                addLog('✅ Data parsed successfully', 'success');
+            }, 1500);
+            
+            setTimeout(() => {
+                updateNode('node3', 'error', 'Error');
+                addLog('❌ ERROR: Missing API key in environment', 'error');
+                addLog('⚠️ Workflow stopped at node 3', 'warning');
+            }, 2500);
+        }
+        
+        function debugWorkflow() {
+            addLog('🐛 Debug mode activated', 'warning');
+            addLog('🔍 Scanning workflow for errors...', 'info');
+            
+            setTimeout(() => {
+                addLog('⚠️ Found error in node 3: Missing API_KEY', 'warning');
+                addLog('🔧 Fixing: Adding API_KEY to environment...', 'info');
+            }, 1000);
+            
+            setTimeout(() => {
+                addLog('✅ Fix applied successfully', 'success');
+                updateNode('node3', 'success', 'Fixed');
+                addLog('▶️ Resuming workflow...', 'info');
+            }, 2500);
+            
+            setTimeout(() => {
+                updateNode('node4', 'success', 'Success');
+                addLog('✅ Data saved to database', 'success');
+            }, 3500);
+            
+            setTimeout(() => {
+                updateNode('node5', 'success', 'Success');
+                addLog('✅ Response sent successfully', 'success');
+                addLog('🎉 Workflow completed without errors', 'success');
+            }, 4500);
+        }
+        
+        function resetWorkflow() {
+            logs = [];
+            document.getElementById('log').innerHTML = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                if (i === 3) {
+                    updateNode(`node${i}`, 'error', 'Error');
+                } else {
+                    updateNode(`node${i}`, 'pending', 'Pending');
+                }
+            }
+            
+            addLog('🔄 Workflow reset', 'info');
+        }
+        
+        // Initialize
+        addLog('🟢 n8n Debug Dashboard initialized', 'success');
+        addLog('⚠️ Warning: Node 3 has configuration error', 'warning');
+    </script>
+</body>
+</html>
