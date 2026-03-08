@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discord Server Visualizer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1e1f29 0%, #2b2d42 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #5865f2;
+            box-shadow: 0 4px 20px rgba(88, 101, 242, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #5865f2;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar {
+            background: rgba(47, 49, 54, 0.95);
+            border-radius: 12px;
+            padding: 1.5rem;
+            height: fit-content;
+        }
+        
+        .sidebar-title {
+            color: #5865f2;
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .category-header {
+            color: #b9bbbe;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .channel {
+            padding: 0.5rem 0.8rem;
+            margin-bottom: 0.3rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #96989d;
+        }
+        
+        .channel:hover {
+            background: rgba(79, 84, 92, 0.5);
+            color: #dcddde;
+        }
+        
+        .channel.active {
+            background: rgba(88, 101, 242, 0.15);
+            color: #fff;
+        }
+        
+        .channel-icon {
+            font-size: 1.1rem;
+        }
+        
+        .main-content {
+            background: rgba(47, 49, 54, 0.95);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            color: #5865f2;
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .content-subtitle {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .feature-card {
+            background: rgba(32, 34, 37, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid rgba(88, 101, 242, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(88, 101, 242, 0.5);
+            box-shadow: 0 8px 25px rgba(88, 101, 242, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .feature-title {
+            color: #fff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-desc {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .roles-container {
+            background: rgba(32, 34, 37, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .roles-title {
+            color: #5865f2;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        .role-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        
+        .role {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .role-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .role-admin {
+            background: rgba(237, 66, 69, 0.2);
+            color: #ed4245;
+        }
+        
+        .role-mod {
+            background: rgba(88, 101, 242, 0.2);
+            color: #5865f2;
+        }
+        
+        .role-member {
+            background: rgba(87, 242, 135, 0.2);
+            color: #57f287;
+        }
+        
+        .role-bot {
+            background: rgba(254, 231, 92, 0.2);
+            color: #fee75c;
+        }
+        
+        .onboarding-flow {
+            background: rgba(32, 34, 37, 0.8);
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+        
+        .flow-title {
+            color: #5865f2;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .flow-step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .flow-step::before {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 40px;
+            bottom: -20px;
+            width: 2px;
+            background: rgba(88, 101, 242, 0.3);
+        }
+        
+        .flow-step:last-child::before {
+            display: none;
+        }
+        
+        .step-number {
+            width: 36px;
+            height: 36px;
+            background: #5865f2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #fff;
+            flex-shrink: 0;
+            z-index: 1;
+        }
+        
+        .step-content {
+            flex: 1;
+            padding-top: 0.2rem;
+        }
+        
+        .step-title {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+            color: #fff;
+        }
+        
+        .step-desc {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+        }
+        
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>Discord Server Visualizer — Complete Community Setup</p>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="sidebar">
+                <div class="sidebar-title">🎮 Server Structure</div>
+                
+                <div class="category">
+                    <div class="category-header">▼ 📢 INFORMATION</div>
+                    <div class="channel active">
+                        <span class="channel-icon">📋</span> welcome
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">📜</span> rules
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">📰</span> announcements
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">▼ 💬 GENERAL</div>
+                    <div class="channel">
+                        <span class="channel-icon">#</span> general-chat
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">#</span> introductions
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">#</span> off-topic
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">▼ 🛠️ SUPPORT</div>
+                    <div class="channel">
+                        <span class="channel-icon">🎫</span> create-ticket
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">❓</span> faq
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">🤖</span> bot-commands
+                    </div>
+                </div>
+                
+                <div class="category">
+                    <div class="category-header">▼ 🔊 VOICE</div>
+                    <div class="channel">
+                        <span class="channel-icon">🔊</span> General Voice
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">🔊</span> Meeting Room
+                    </div>
+                    <div class="channel">
+                        <span class="channel-icon">🔊</span> AFK
+                    </div>
+                </div>
+            </div>
+            
+            <div class="main-content">
+                <div class="content-header">
+                    <div class="content-title">Server Configuration</div>
+                    <div class="content-subtitle">Complete Discord setup with automation, roles, and onboarding</div>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-title">YAGPDB Bot</div>
+                        <div class="feature-desc">Custom commands, auto-moderation, and welcome messages</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🎫</div>
+                        <div class="feature-title">Ticket System</div>
+                        <div class="feature-desc">One-click support ticket creation with categories</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">🛡️</div>
+                        <div class="feature-title">Auto-Moderation</div>
+                        <div class="feature-desc">Spam filters, word filters, and raid protection</div>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-title">Analytics</div>
+                        <div class="feature-desc">Track member growth, activity, and engagement</div>
+                    </div>
+                </div>
+                
+                <div class="roles-container">
+                    <div class="roles-title">Server Roles</div>
+                    <div class="role-list">
+                        <div class="role role-admin">
+                            <div class="role-dot" style="background: #ed4245;"></div>
+                            Admin
+                        </div>
+                        <div class="role role-mod">
+                            <div class="role-dot" style="background: #5865f2;"></div>
+                            Moderator
+                        </div>
+                        <div class="role role-member">
+                            <div class="role-dot" style="background: #57f287;"></div>
+                            Member
+                        </div>
+                        <div class="role role-bot">
+                            <div class="role-dot" style="background: #fee75c;"></div>
+                            Bot
+                        </div>
+                        <div class="role role-member">
+                            <div class="role-dot" style="background: #9b59b6;"></div>
+                            VIP
+                        </div>
+                        <div class="role role-member">
+                            <div class="role-dot" style="background: #3498db;"></div>
+                            Supporter
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="onboarding-flow">
+                    <div class="flow-title">Member Onboarding Flow</div>
+                    
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <div class="step-title">Join Server</div>
+                            <div class="step-desc">New member receives automated welcome message with rules</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">Accept Rules</div>
+                            <div class="step-desc">Member reacts to rules message to unlock channels</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">Choose Roles</div>
+                            <div class="step-desc">React to get notification roles and interest tags</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">Introduction</div>
+                            <div class="step-desc">Prompted to introduce themselves in #introductions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">Full Access</div>
+                            <div class="step-desc">Unlocks all channels and can participate fully</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+    
+    <script>
+        document.querySelectorAll('.channel').forEach(channel => {
+            channel.addEventListener('click', function() {
+                document.querySelectorAll('.channel').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

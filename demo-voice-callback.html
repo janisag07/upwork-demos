@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Voice Callback System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1e1e2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #f72585;
+            box-shadow: 0 4px 20px rgba(247, 37, 133, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #f72585;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .pipeline {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(247, 37, 133, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pipeline-title {
+            color: #f72585;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .flow-horizontal {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .flow-node {
+            min-width: 180px;
+            background: rgba(30, 30, 50, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-node:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.3);
+        }
+        
+        .flow-node::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #666;
+        }
+        
+        .flow-node:last-child::after {
+            display: none;
+        }
+        
+        .node-gmail { border-color: #ea4335; }
+        .node-make { border-color: #6d3aed; }
+        .node-ai { border-color: #00d9ff; }
+        .node-sheets { border-color: #0f9d58; }
+        .node-calendar { border-color: #4285f4; }
+        .node-sms { border-color: #f72585; }
+        
+        .node-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .node-label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .node-desc {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(247, 37, 133, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(247, 37, 133, 0.5);
+            box-shadow: 0 8px 25px rgba(247, 37, 133, 0.2);
+        }
+        
+        .card h2 {
+            color: #f72585;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .lead-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .lead-new { border-left-color: #00d9ff; }
+        .lead-called { border-left-color: #ffaa00; }
+        .lead-scheduled { border-left-color: #00ff88; }
+        .lead-completed { border-left-color: #666; }
+        
+        .lead-info {
+            flex: 1;
+        }
+        
+        .lead-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .lead-details {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .lead-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-new {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+        }
+        
+        .status-called {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .status-scheduled {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .status-completed {
+            background: rgba(100, 100, 100, 0.2);
+            color: #999;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #f72585;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .call-log {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .call-entry {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .call-time {
+            color: #666;
+            font-size: 0.75rem;
+        }
+        
+        .call-result {
+            color: #00ff88;
+            font-weight: 600;
+        }
+        
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .card { border: 1px solid #ddd; background: white; }
+        }
+        
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .flow-horizontal {
+                flex-direction: column;
+            }
+            .flow-node::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -35px;
+                transform: translateX(50%);
+            }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>AI Voice Callback System — Automated Lead Management Pipeline</p>
+    </header>
+    
+    <div class="container">
+        <div class="pipeline">
+            <div class="pipeline-title">Complete Automation Pipeline</div>
+            <div class="flow-horizontal">
+                <div class="flow-node node-gmail">
+                    <div class="node-icon">📧</div>
+                    <div class="node-label">Gmail</div>
+                    <div class="node-desc">Detect new lead</div>
+                </div>
+                
+                <div class="flow-node node-make">
+                    <div class="node-icon">⚙️</div>
+                    <div class="node-label">Make.com</div>
+                    <div class="node-desc">Trigger workflow</div>
+                </div>
+                
+                <div class="flow-node node-ai">
+                    <div class="node-icon">🤖</div>
+                    <div class="node-label">AI Call</div>
+                    <div class="node-desc">Voice callback</div>
+                </div>
+                
+                <div class="flow-node node-sheets">
+                    <div class="node-icon">📊</div>
+                    <div class="node-label">Google Sheets</div>
+                    <div class="node-desc">Log result</div>
+                </div>
+                
+                <div class="flow-node node-calendar">
+                    <div class="node-icon">📅</div>
+                    <div class="node-label">Calendar</div>
+                    <div class="node-desc">Book meeting</div>
+                </div>
+                
+                <div class="flow-node node-sms">
+                    <div class="node-icon">💬</div>
+                    <div class="node-label">SMS</div>
+                    <div class="node-desc">Send confirmation</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>📞 Lead Pipeline</h2>
+                <div id="leadPipeline">
+                    <div class="lead-item lead-new">
+                        <div class="lead-info">
+                            <div class="lead-name">John Smith</div>
+                            <div class="lead-details">+1 (555) 0123 • john@example.com</div>
+                        </div>
+                        <span class="lead-status status-new">New</span>
+                    </div>
+                    
+                    <div class="lead-item lead-called">
+                        <div class="lead-info">
+                            <div class="lead-name">Sarah Johnson</div>
+                            <div class="lead-details">+1 (555) 0456 • sarah@example.com</div>
+                        </div>
+                        <span class="lead-status status-called">Called</span>
+                    </div>
+                    
+                    <div class="lead-item lead-scheduled">
+                        <div class="lead-info">
+                            <div class="lead-name">Mike Davis</div>
+                            <div class="lead-details">+1 (555) 0789 • mike@example.com</div>
+                        </div>
+                        <span class="lead-status status-scheduled">Scheduled</span>
+                    </div>
+                    
+                    <div class="lead-item lead-scheduled">
+                        <div class="lead-info">
+                            <div class="lead-name">Emily Brown</div>
+                            <div class="lead-details">+1 (555) 0321 • emily@example.com</div>
+                        </div>
+                        <span class="lead-status status-scheduled">Scheduled</span>
+                    </div>
+                    
+                    <div class="lead-item lead-completed">
+                        <div class="lead-info">
+                            <div class="lead-name">David Wilson</div>
+                            <div class="lead-details">+1 (555) 0654 • david@example.com</div>
+                        </div>
+                        <span class="lead-status status-completed">Completed</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📊 Today's Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">47</div>
+                        <div class="stat-label">Leads Received</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">42</div>
+                        <div class="stat-label">Calls Made</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">31</div>
+                        <div class="stat-label">Scheduled</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">74%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card wide-card">
+            <h2>📝 Recent Call Log</h2>
+            <div class="call-log">
+                <div class="call-entry">
+                    <div class="call-time">[14:32] +1 (555) 0123 - John Smith</div>
+                    <div class="call-result">✓ Answered - Meeting scheduled for Tue 3 PM</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[14:28] +1 (555) 0456 - Sarah Johnson</div>
+                    <div class="call-result">✓ Voicemail left - Callback requested</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[14:20] +1 (555) 0789 - Mike Davis</div>
+                    <div class="call-result">✓ Answered - Meeting scheduled for Wed 10 AM</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[14:15] +1 (555) 0321 - Emily Brown</div>
+                    <div class="call-result">✓ Answered - Meeting scheduled for Thu 2 PM</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[14:08] +1 (555) 0654 - David Wilson</div>
+                    <div class="call-result">✓ Answered - Meeting completed</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[14:02] +1 (555) 0987 - Lisa Anderson</div>
+                    <div class="call-result">○ No answer - Retry scheduled</div>
+                </div>
+                
+                <div class="call-entry">
+                    <div class="call-time">[13:55] +1 (555) 0246 - Tom Martinez</div>
+                    <div class="call-result">✓ Answered - Meeting scheduled for Fri 11 AM</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+</body>
+</html>

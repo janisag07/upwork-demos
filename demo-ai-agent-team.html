@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Software Dev Team</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1e1e2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #10b981;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #10b981;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .agent-card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 2px solid;
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: inherit;
+            opacity: 0.5;
+        }
+        
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .agent-pm { border-color: #10b981; }
+        .agent-architect { border-color: #3b82f6; }
+        .agent-frontend { border-color: #f59e0b; }
+        .agent-backend { border-color: #8b5cf6; }
+        .agent-qa { border-color: #ef4444; }
+        
+        .agent-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .agent-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+        
+        .avatar-pm { background: linear-gradient(135deg, #10b981, #059669); }
+        .avatar-architect { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        .avatar-frontend { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .avatar-backend { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+        .avatar-qa { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        
+        .agent-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.2rem;
+        }
+        
+        .agent-role {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .agent-status {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .status-label {
+            color: #666;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .status-text {
+            color: #e0e0e0;
+        }
+        
+        .task-flow {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .flow-title {
+            font-size: 1.4rem;
+            color: #10b981;
+            margin-bottom: 1.5rem;
+        }
+        
+        .flow-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .flow-step {
+            min-width: 200px;
+            background: rgba(30, 30, 50, 0.8);
+            padding: 1.2rem;
+            border-radius: 10px;
+            border: 2px solid;
+            position: relative;
+        }
+        
+        .flow-step::after {
+            content: '→';
+            position: absolute;
+            right: -25px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #666;
+        }
+        
+        .flow-step:last-child::after {
+            display: none;
+        }
+        
+        .step-planning { border-color: #10b981; }
+        .step-design { border-color: #3b82f6; }
+        .step-frontend { border-color: #f59e0b; }
+        .step-backend { border-color: #8b5cf6; }
+        .step-testing { border-color: #ef4444; }
+        
+        .step-label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+        
+        .step-status {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .code-output {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+        }
+        
+        .code-title {
+            font-size: 1.4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .code-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-tab {
+            padding: 0.6rem 1.2rem;
+            background: rgba(0, 0, 0, 0.3);
+            border: none;
+            border-radius: 6px;
+            color: #aaa;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 0.9rem;
+        }
+        
+        .code-tab.active {
+            background: #10b981;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .code-block {
+            background: #0a0a0f;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            overflow-x: auto;
+            display: none;
+        }
+        
+        .code-block.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .keyword { color: #f59e0b; }
+        .string { color: #10b981; }
+        .comment { color: #666; }
+        .function { color: #3b82f6; }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+        }
+        
+        @media (max-width: 768px) {
+            .team-grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+            .flow-container { flex-direction: column; align-items: stretch; }
+            .flow-step::after { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>AI Software Development Team — Collaborative Coding Agents</p>
+    </header>
+    
+    <div class="container">
+        <div class="team-grid">
+            <div class="agent-card agent-pm">
+                <div class="agent-header">
+                    <div class="agent-avatar avatar-pm">PM</div>
+                    <div class="agent-info">
+                        <h3>Project Manager</h3>
+                        <div class="agent-role">Planning & Coordination</div>
+                    </div>
+                </div>
+                <div class="agent-status">
+                    <div class="status-label">Current Task</div>
+                    <div class="status-text">Defining user stories for v2.0</div>
+                </div>
+            </div>
+            
+            <div class="agent-card agent-architect">
+                <div class="agent-header">
+                    <div class="agent-avatar avatar-architect">AR</div>
+                    <div class="agent-info">
+                        <h3>Architect</h3>
+                        <div class="agent-role">System Design</div>
+                    </div>
+                </div>
+                <div class="agent-status">
+                    <div class="status-label">Current Task</div>
+                    <div class="status-text">Designing microservices architecture</div>
+                </div>
+            </div>
+            
+            <div class="agent-card agent-frontend">
+                <div class="agent-header">
+                    <div class="agent-avatar avatar-frontend">FE</div>
+                    <div class="agent-info">
+                        <h3>Frontend Dev</h3>
+                        <div class="agent-role">UI Implementation</div>
+                    </div>
+                </div>
+                <div class="agent-status">
+                    <div class="status-label">Current Task</div>
+                    <div class="status-text">Building dashboard components</div>
+                </div>
+            </div>
+            
+            <div class="agent-card agent-backend">
+                <div class="agent-header">
+                    <div class="agent-avatar avatar-backend">BE</div>
+                    <div class="agent-info">
+                        <h3>Backend Dev</h3>
+                        <div class="agent-role">API & Database</div>
+                    </div>
+                </div>
+                <div class="agent-status">
+                    <div class="status-label">Current Task</div>
+                    <div class="status-text">Implementing REST endpoints</div>
+                </div>
+            </div>
+            
+            <div class="agent-card agent-qa">
+                <div class="agent-header">
+                    <div class="agent-avatar avatar-qa">QA</div>
+                    <div class="agent-info">
+                        <h3>QA Engineer</h3>
+                        <div class="agent-role">Testing & Quality</div>
+                    </div>
+                </div>
+                <div class="agent-status">
+                    <div class="status-label">Current Task</div>
+                    <div class="status-text">Running integration tests</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="task-flow">
+            <div class="flow-title">Development Pipeline</div>
+            <div class="flow-container">
+                <div class="flow-step step-planning">
+                    <div class="step-label">Planning</div>
+                    <div class="step-status">✓ Complete</div>
+                </div>
+                <div class="flow-step step-design">
+                    <div class="step-label">Design</div>
+                    <div class="step-status">✓ Complete</div>
+                </div>
+                <div class="flow-step step-frontend">
+                    <div class="step-label">Frontend</div>
+                    <div class="step-status">⚙ In Progress</div>
+                </div>
+                <div class="flow-step step-backend">
+                    <div class="step-label">Backend</div>
+                    <div class="step-status">⚙ In Progress</div>
+                </div>
+                <div class="flow-step step-testing">
+                    <div class="step-label">Testing</div>
+                    <div class="step-status">⏳ Pending</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="code-output">
+            <div class="code-title">Generated Code Output</div>
+            <div class="code-tabs">
+                <button class="code-tab active" onclick="switchTab(0)">Frontend (React)</button>
+                <button class="code-tab" onclick="switchTab(1)">Backend (Node.js)</button>
+                <button class="code-tab" onclick="switchTab(2)">Tests (Jest)</button>
+            </div>
+            
+            <div class="code-block active" id="code0">
+<span class="keyword">import</span> React, { useState, useEffect } <span class="keyword">from</span> <span class="string">'react'</span>;
+
+<span class="keyword">const</span> <span class="function">Dashboard</span> = () => {
+  <span class="keyword">const</span> [data, setData] = <span class="function">useState</span>([]);
+  <span class="keyword">const</span> [loading, setLoading] = <span class="function">useState</span>(<span class="keyword">true</span>);
+
+  <span class="function">useEffect</span>(() => {
+    <span class="comment">// Fetch dashboard data from API</span>
+    <span class="function">fetch</span>(<span class="string">'/api/dashboard'</span>)
+      .<span class="function">then</span>(res => res.<span class="function">json</span>())
+      .<span class="function">then</span>(data => {
+        <span class="function">setData</span>(data);
+        <span class="function">setLoading</span>(<span class="keyword">false</span>);
+      });
+  }, []);
+
+  <span class="keyword">return</span> (
+    &lt;<span class="keyword">div</span> className=<span class="string">"dashboard"</span>&gt;
+      {loading ? <span class="string">'Loading...'</span> : <span class="string">'Data loaded'</span>}
+    &lt;/<span class="keyword">div</span>&gt;
+  );
+};
+
+<span class="keyword">export default</span> Dashboard;
+            </div>
+            
+            <div class="code-block" id="code1">
+<span class="keyword">const</span> express = <span class="function">require</span>(<span class="string">'express'</span>);
+<span class="keyword">const</span> router = express.<span class="function">Router</span>();
+
+<span class="comment">// GET /api/dashboard endpoint</span>
+router.<span class="function">get</span>(<span class="string">'/dashboard'</span>, <span class="keyword">async</span> (req, res) => {
+  <span class="keyword">try</span> {
+    <span class="comment">// Fetch data from database</span>
+    <span class="keyword">const</span> data = <span class="keyword">await</span> db.<span class="function">query</span>(<span class="string">'SELECT * FROM analytics'</span>);
+    
+    <span class="comment">// Return formatted response</span>
+    res.<span class="function">json</span>({
+      success: <span class="keyword">true</span>,
+      data: data,
+      timestamp: <span class="keyword">new</span> <span class="function">Date</span>().<span class="function">toISOString</span>()
+    });
+  } <span class="keyword">catch</span> (error) {
+    res.<span class="function">status</span>(500).<span class="function">json</span>({ error: error.message });
+  }
+});
+
+module.exports = router;
+            </div>
+            
+            <div class="code-block" id="code2">
+<span class="keyword">const</span> { <span class="function">render</span>, screen } = <span class="function">require</span>(<span class="string">'@testing-library/react'</span>);
+<span class="keyword">const</span> Dashboard = <span class="function">require</span>(<span class="string">'./Dashboard'</span>);
+
+<span class="function">describe</span>(<span class="string">'Dashboard Component'</span>, () => {
+  <span class="function">test</span>(<span class="string">'renders loading state initially'</span>, () => {
+    <span class="function">render</span>(&lt;Dashboard /&gt;);
+    <span class="keyword">const</span> loading = screen.<span class="function">getByText</span>(<span class="string">/loading/i</span>);
+    <span class="function">expect</span>(loading).<span class="function">toBeInTheDocument</span>();
+  });
+
+  <span class="function">test</span>(<span class="string">'displays data after loading'</span>, <span class="keyword">async</span> () => {
+    <span class="function">render</span>(&lt;Dashboard /&gt;);
+    <span class="keyword">const</span> data = <span class="keyword">await</span> screen.<span class="function">findByText</span>(<span class="string">/data loaded/i</span>);
+    <span class="function">expect</span>(data).<span class="function">toBeInTheDocument</span>();
+  });
+});
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+    
+    <script>
+        function switchTab(index) {
+            document.querySelectorAll('.code-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            document.querySelectorAll('.code-block').forEach((block, i) => {
+                block.classList.toggle('active', i === index);
+            });
+        }
+    </script>
+</body>
+</html>

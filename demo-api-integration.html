@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Integration Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0f0f1a 0%, #1e1e2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #06b6d4;
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #06b6d4;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .pipeline-visual {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .pipeline-title {
+            color: #06b6d4;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .flow-path {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .flow-box {
+            background: rgba(30, 30, 50, 0.9);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 2px solid;
+            min-width: 180px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .flow-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.3);
+        }
+        
+        .flow-box::after {
+            content: '→';
+            position: absolute;
+            right: -30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2rem;
+            color: #666;
+        }
+        
+        .flow-box:last-child::after {
+            display: none;
+        }
+        
+        .box-perplexity { border-color: #20c997; }
+        .box-transform { border-color: #fbbf24; }
+        .box-salesforce { border-color: #00a1e0; }
+        
+        .box-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        .box-label {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .box-desc {
+            color: #aaa;
+            font-size: 0.8rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(6, 182, 212, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(6, 182, 212, 0.5);
+            box-shadow: 0 8px 25px rgba(6, 182, 212, 0.2);
+        }
+        
+        .card h2 {
+            color: #06b6d4;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .data-flow {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        
+        .data-step {
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(30, 30, 50, 0.6);
+            border-radius: 6px;
+            border-left: 3px solid #06b6d4;
+        }
+        
+        .data-label {
+            color: #06b6d4;
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .data-content {
+            color: #aaa;
+        }
+        
+        .status-monitor {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .status-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .status-info {
+            flex: 1;
+        }
+        
+        .status-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .status-detail {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .status-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .badge-healthy {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .badge-warning {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+        }
+        
+        .metric-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #06b6d4;
+            margin-bottom: 0.3rem;
+        }
+        
+        .metric-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .log-viewer {
+            background: #0a0a0f;
+            padding: 1.5rem;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .log-time {
+            color: #666;
+        }
+        
+        .log-level-info {
+            color: #06b6d4;
+        }
+        
+        .log-level-success {
+            color: #00ff88;
+        }
+        
+        .log-level-warning {
+            color: #ffaa00;
+        }
+        
+        .log-message {
+            color: #aaa;
+        }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .card { border: 1px solid #ddd; background: white; }
+        }
+        
+        @media (max-width: 1024px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            .flow-path {
+                flex-direction: column;
+            }
+            .flow-box::after {
+                content: '↓';
+                right: 50%;
+                top: auto;
+                bottom: -35px;
+                transform: translateX(50%);
+            }
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>API Integration Hub — Perplexity to Salesforce Pipeline</p>
+    </header>
+    
+    <div class="container">
+        <div class="pipeline-visual">
+            <div class="pipeline-title">Real-time Data Pipeline</div>
+            <div class="flow-path">
+                <div class="flow-box box-perplexity">
+                    <div class="box-icon">🔍</div>
+                    <div class="box-label">Perplexity AI</div>
+                    <div class="box-desc">Research & Enrich</div>
+                </div>
+                
+                <div class="flow-box box-transform">
+                    <div class="box-icon">⚙️</div>
+                    <div class="box-label">Data Transform</div>
+                    <div class="box-desc">Map & Validate</div>
+                </div>
+                
+                <div class="flow-box box-salesforce">
+                    <div class="box-icon">☁️</div>
+                    <div class="box-label">Salesforce</div>
+                    <div class="box-desc">Update CRM</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>📊 Data Flow Visualization</h2>
+                <div class="data-flow">
+                    <div class="data-step">
+                        <div class="data-label">1. Perplexity Query</div>
+                        <div class="data-content">
+                            {<br>
+                            &nbsp;&nbsp;"query": "Company info for Acme Corp",<br>
+                            &nbsp;&nbsp;"model": "sonar-medium"<br>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="data-step">
+                        <div class="data-label">2. AI Response</div>
+                        <div class="data-content">
+                            {<br>
+                            &nbsp;&nbsp;"company": "Acme Corp",<br>
+                            &nbsp;&nbsp;"industry": "Technology",<br>
+                            &nbsp;&nbsp;"revenue": "$50M",<br>
+                            &nbsp;&nbsp;"employees": "250-500"<br>
+                            }
+                        </div>
+                    </div>
+                    
+                    <div class="data-step">
+                        <div class="data-label">3. Salesforce Update</div>
+                        <div class="data-content">
+                            Account.update({<br>
+                            &nbsp;&nbsp;Industry__c: "Technology",<br>
+                            &nbsp;&nbsp;AnnualRevenue: 50000000,<br>
+                            &nbsp;&nbsp;NumberOfEmployees: 375<br>
+                            })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔧 Status Monitor</h2>
+                <div class="status-monitor">
+                    <div class="status-item">
+                        <div class="status-info">
+                            <div class="status-name">Perplexity API</div>
+                            <div class="status-detail">Last request: 2s ago</div>
+                        </div>
+                        <span class="status-badge badge-healthy">Healthy</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-info">
+                            <div class="status-name">Data Transformer</div>
+                            <div class="status-detail">Processing queue: 3 items</div>
+                        </div>
+                        <span class="status-badge badge-healthy">Healthy</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-info">
+                            <div class="status-name">Salesforce API</div>
+                            <div class="status-detail">Rate limit: 87% available</div>
+                        </div>
+                        <span class="status-badge badge-warning">Warning</span>
+                    </div>
+                    
+                    <div class="status-item">
+                        <div class="status-info">
+                            <div class="status-name">Error Handler</div>
+                            <div class="status-detail">No errors in last hour</div>
+                        </div>
+                        <span class="status-badge badge-healthy">Healthy</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card wide-card">
+            <h2>📈 Performance Metrics</h2>
+            <div class="metrics-grid">
+                <div class="metric-box">
+                    <div class="metric-value">1,247</div>
+                    <div class="metric-label">Records Synced</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">98.3%</div>
+                    <div class="metric-label">Success Rate</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">2.4s</div>
+                    <div class="metric-label">Avg Processing</div>
+                </div>
+                <div class="metric-box">
+                    <div class="metric-value">$18.20</div>
+                    <div class="metric-label">API Cost Today</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card wide-card">
+            <h2>📝 Integration Log</h2>
+            <div class="log-viewer">
+                <div class="log-entry">
+                    <span class="log-time">[14:32:41]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    <span class="log-message">Received enrichment request for Account ID: 001XX000003DGb2</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:42]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    <span class="log-message">Querying Perplexity API: "Company information for Tech Solutions Inc"</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:44]</span>
+                    <span class="log-level-success">[SUCCESS]</span>
+                    <span class="log-message">Perplexity response received (2.1s)</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:44]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    <span class="log-message">Transforming data: Industry, Revenue, Employee Count</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:45]</span>
+                    <span class="log-level-success">[SUCCESS]</span>
+                    <span class="log-message">Salesforce Account updated successfully</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:38]</span>
+                    <span class="log-level-info">[INFO]</span>
+                    <span class="log-message">Received enrichment request for Account ID: 001XX000003DGa9</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:39]</span>
+                    <span class="log-level-success">[SUCCESS]</span>
+                    <span class="log-message">Salesforce Account updated successfully</span>
+                </div>
+                <div class="log-entry">
+                    <span class="log-time">[14:32:35]</span>
+                    <span class="log-level-warning">[WARN]</span>
+                    <span class="log-message">Rate limit approaching 90% - throttling requests</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+</body>
+</html>

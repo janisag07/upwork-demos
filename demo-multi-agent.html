@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Agent Bot System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #7c3aed;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(124, 58, 237, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(124, 58, 237, 0.5);
+            box-shadow: 0 8px 25px rgba(124, 58, 237, 0.2);
+        }
+        
+        .card h2 {
+            color: #7c3aed;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .agent-card {
+            background: rgba(30, 30, 50, 0.6);
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+            border-left: 4px solid;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+        
+        .agent-card:hover {
+            background: rgba(40, 40, 60, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .agent-info {
+            flex: 1;
+        }
+        
+        .agent-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.3rem;
+        }
+        
+        .agent-task {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .agent-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .status-active {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .status-processing {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .status-idle {
+            background: rgba(100, 100, 100, 0.2);
+            color: #999;
+        }
+        
+        .task-queue {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .task-priority {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .priority-high {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        
+        .priority-medium {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .priority-low {
+            background: rgba(100, 100, 100, 0.2);
+            color: #999;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+        
+        .stat-box {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #7c3aed;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-entry {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .log-time {
+            color: #666;
+        }
+        
+        .log-agent {
+            color: #7c3aed;
+            font-weight: 600;
+        }
+        
+        .log-message {
+            color: #aaa;
+        }
+        
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .card { border: 1px solid #ddd; background: white; }
+        }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>Multi-Agent Bot System — AI Orchestration Dashboard</p>
+    </header>
+    
+    <div class="container">
+        <div class="grid">
+            <div class="card wide-card">
+                <h2>Active AI Agents (7)</h2>
+                <div class="grid">
+                    <div class="agent-card" style="border-left-color: #00d9ff;">
+                        <div class="agent-info">
+                            <div class="agent-name">WhatsApp Parser</div>
+                            <div class="agent-task">Processing incoming messages</div>
+                        </div>
+                        <span class="agent-status status-active">Active</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #00ff88;">
+                        <div class="agent-info">
+                            <div class="agent-name">Lead Qualifier</div>
+                            <div class="agent-task">Analyzing lead data</div>
+                        </div>
+                        <span class="agent-status status-processing">Processing</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #ffaa00;">
+                        <div class="agent-info">
+                            <div class="agent-name">Email Responder</div>
+                            <div class="agent-task">Drafting auto-replies</div>
+                        </div>
+                        <span class="agent-status status-active">Active</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #ea4c89;">
+                        <div class="agent-info">
+                            <div class="agent-name">CRM Sync Agent</div>
+                            <div class="agent-task">Updating customer records</div>
+                        </div>
+                        <span class="agent-status status-processing">Processing</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #9d4edd;">
+                        <div class="agent-info">
+                            <div class="agent-name">Calendar Manager</div>
+                            <div class="agent-task">Scheduling appointments</div>
+                        </div>
+                        <span class="agent-status status-idle">Idle</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #06ffa5;">
+                        <div class="agent-info">
+                            <div class="agent-name">Data Enrichment</div>
+                            <div class="agent-task">Enhancing contact info</div>
+                        </div>
+                        <span class="agent-status status-active">Active</span>
+                    </div>
+                    
+                    <div class="agent-card" style="border-left-color: #ff6b6b;">
+                        <div class="agent-info">
+                            <div class="agent-name">Notification Hub</div>
+                            <div class="agent-task">Sending alerts</div>
+                        </div>
+                        <span class="agent-status status-active">Active</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Task Queue (12)</h2>
+                <div class="task-queue">
+                    <div class="task-item">
+                        <span>Process WhatsApp msg #4521</span>
+                        <span class="task-priority priority-high">High</span>
+                    </div>
+                    <div class="task-item">
+                        <span>Enrich lead data: john@ex.com</span>
+                        <span class="task-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="task-item">
+                        <span>Send follow-up email</span>
+                        <span class="task-priority priority-medium">Medium</span>
+                    </div>
+                    <div class="task-item">
+                        <span>Update CRM contact: Sarah M.</span>
+                        <span class="task-priority priority-low">Low</span>
+                    </div>
+                    <div class="task-item">
+                        <span>Schedule callback: +1 555-0123</span>
+                        <span class="task-priority priority-high">High</span>
+                    </div>
+                    <div class="task-item">
+                        <span>Parse email attachment</span>
+                        <span class="task-priority priority-medium">Medium</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Claude API Stats</h2>
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <div class="stat-value">1,247</div>
+                        <div class="stat-label">API Calls Today</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">98.2%</div>
+                        <div class="stat-label">Success Rate</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">340ms</div>
+                        <div class="stat-label">Avg Response</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-value">$12.40</div>
+                        <div class="stat-label">Cost Today</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card wide-card">
+                <h2>Real-time Agent Logs</h2>
+                <div class="log-container" id="logContainer">
+                    <div class="log-entry">
+                        <span class="log-time">[14:32:41]</span>
+                        <span class="log-agent">[WhatsApp]</span>
+                        <span class="log-message">New message received from +1-555-0199</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">[14:32:43]</span>
+                        <span class="log-agent">[LeadQual]</span>
+                        <span class="log-message">Lead scored: 85/100 (High Priority)</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">[14:32:45]</span>
+                        <span class="log-agent">[CRM]</span>
+                        <span class="log-message">Contact updated: John Doe</span>
+                    </div>
+                    <div class="log-entry">
+                        <span class="log-time">[14:32:47]</span>
+                        <span class="log-agent">[Email]</span>
+                        <span class="log-message">Auto-reply sent successfully</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+    
+    <script>
+        const agents = ['WhatsApp', 'LeadQual', 'CRM', 'Email', 'Calendar', 'Enrich', 'Notify'];
+        const actions = [
+            'Processing new message',
+            'Lead score calculated',
+            'Contact synced',
+            'Email sent',
+            'Appointment scheduled',
+            'Data enriched',
+            'Notification sent',
+            'API call completed',
+            'Task queued'
+        ];
+        
+        function addLogEntry() {
+            const now = new Date();
+            const time = now.toTimeString().split(' ')[0];
+            const agent = agents[Math.floor(Math.random() * agents.length)];
+            const action = actions[Math.floor(Math.random() * actions.length)];
+            
+            const logContainer = document.getElementById('logContainer');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.innerHTML = `
+                <span class="log-time">[${time}]</span>
+                <span class="log-agent">[${agent}]</span>
+                <span class="log-message">${action}</span>
+            `;
+            
+            logContainer.insertBefore(entry, logContainer.firstChild);
+            
+            if (logContainer.children.length > 20) {
+                logContainer.removeChild(logContainer.lastChild);
+            }
+        }
+        
+        setInterval(addLogEntry, 3000);
+    </script>
+</body>
+</html>

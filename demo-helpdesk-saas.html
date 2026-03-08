@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Helpdesk SaaS - Support Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 13px;
+            color: #888;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(0,212,255,0.3);
+            box-shadow: 0 8px 32px rgba(0,212,255,0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(0,212,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            text-transform: uppercase;
+        }
+
+        .ticket {
+            background: rgba(255,255,255,0.03);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 3px solid #00d4ff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .ticket:hover {
+            background: rgba(255,255,255,0.08);
+            transform: translateX(5px);
+        }
+
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .ticket-id {
+            font-weight: bold;
+            color: #00d4ff;
+        }
+
+        .ticket-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-open { background: #ff6b6b; color: white; }
+        .status-pending { background: #ffd93d; color: #333; }
+        .status-resolved { background: #6bcf7f; color: white; }
+
+        .ticket-subject {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+
+        .ticket-meta {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .ai-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            margin-left: 5px;
+        }
+
+        .chat-widget {
+            position: sticky;
+            top: 20px;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            max-height: 400px;
+        }
+
+        .chat-message {
+            margin-bottom: 12px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message-user {
+            background: rgba(0,212,255,0.1);
+            padding: 10px 15px;
+            border-radius: 12px 12px 0 12px;
+            border: 1px solid rgba(0,212,255,0.2);
+        }
+
+        .message-ai {
+            background: rgba(102,126,234,0.1);
+            padding: 10px 15px;
+            border-radius: 12px 12px 12px 0;
+            border: 1px solid rgba(102,126,234,0.2);
+        }
+
+        .message-sender {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .chat-input {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .chat-input button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 20px rgba(102,126,234,0.4);
+        }
+
+        .kb-item {
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .kb-item:hover {
+            background: rgba(255,255,255,0.08);
+            border-left: 3px solid #00d4ff;
+        }
+
+        .kb-title {
+            font-weight: bold;
+            color: #00d4ff;
+            margin-bottom: 5px;
+        }
+
+        .kb-desc {
+            font-size: 12px;
+            color: #888;
+        }
+
+        .chart-container {
+            height: 250px;
+            position: relative;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            margin-top: 30px;
+            font-size: 13px;
+            color: #666;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 15px;
+            background: rgba(102,126,234,0.1);
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .typing-indicator.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .typing-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #667eea;
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .stats-row {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>AI-Powered Helpdesk SaaS Platform</p>
+    </div>
+
+    <div class="container">
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-value">127</div>
+                <div class="stat-label">Open Tickets</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">89%</div>
+                <div class="stat-label">AI Resolution Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">2.3m</div>
+                <div class="stat-label">Avg Response Time</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">4.8/5</div>
+                <div class="stat-label">Customer Satisfaction</div>
+            </div>
+        </div>
+
+        <div class="dashboard">
+            <div class="main-panel">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📋 Active Tickets</div>
+                        <span style="font-size: 12px; color: #888;">Last updated: 2 min ago</span>
+                    </div>
+                    <div id="ticketList"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📚 Knowledge Base Browser</div>
+                    </div>
+                    <div id="kbList"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📊 Analytics Dashboard</div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="analyticsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card chat-widget">
+                <div class="card-header">
+                    <div class="card-title">💬 AI Support Chat</div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message">
+                        <div class="message-ai">
+                            <div class="message-sender">AI Assistant <span class="ai-badge">AI</span></div>
+                            <div>Hello! I'm your AI support assistant. How can I help you today?</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="typing-indicator" id="typingIndicator">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
+                <div class="chat-input">
+                    <input type="text" id="chatInput" placeholder="Type your message...">
+                    <button onclick="sendMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        This is an illustrative demo. Data shown is fictional.
+    </div>
+
+    <script>
+        const tickets = [
+            { id: '#T-2847', subject: 'Login issues with SSO integration', status: 'open', customer: 'TechCorp Inc.', time: '5 min ago', ai: false },
+            { id: '#T-2846', subject: 'Password reset not working', status: 'resolved', customer: 'Jane Smith', time: '12 min ago', ai: true },
+            { id: '#T-2845', subject: 'API rate limit exceeded', status: 'pending', customer: 'DevStart LLC', time: '18 min ago', ai: true },
+            { id: '#T-2844', subject: 'Cannot access billing dashboard', status: 'open', customer: 'Sarah Connor', time: '23 min ago', ai: false },
+            { id: '#T-2843', subject: 'Feature request: Dark mode', status: 'pending', customer: 'Mike Johnson', time: '35 min ago', ai: true },
+            { id: '#T-2842', subject: 'Export data to CSV failing', status: 'resolved', customer: 'DataFlow Inc.', time: '1 hour ago', ai: true }
+        ];
+
+        const kbArticles = [
+            { title: 'How to reset your password', desc: 'Step-by-step guide for password recovery', views: 2847 },
+            { title: 'SSO Integration Setup', desc: 'Configure single sign-on with your identity provider', views: 1923 },
+            { title: 'API Rate Limits Explained', desc: 'Understanding and managing API quotas', views: 1456 },
+            { title: 'Billing FAQ', desc: 'Common questions about invoices and payments', views: 987 },
+            { title: 'Data Export Options', desc: 'How to export your data in various formats', views: 743 }
+        ];
+
+        function renderTickets() {
+            const container = document.getElementById('ticketList');
+            container.innerHTML = tickets.map(ticket => `
+                <div class="ticket">
+                    <div class="ticket-header">
+                        <span class="ticket-id">${ticket.id}</span>
+                        <span class="ticket-status status-${ticket.status}">${ticket.status.toUpperCase()}</span>
+                    </div>
+                    <div class="ticket-subject">${ticket.subject} ${ticket.ai ? '<span class="ai-badge">AI Resolved</span>' : ''}</div>
+                    <div class="ticket-meta">
+                        <span>👤 ${ticket.customer}</span>
+                        <span>🕐 ${ticket.time}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderKB() {
+            const container = document.getElementById('kbList');
+            container.innerHTML = kbArticles.map(article => `
+                <div class="kb-item">
+                    <div class="kb-title">${article.title}</div>
+                    <div class="kb-desc">${article.desc} • ${article.views} views</div>
+                </div>
+            `).join('');
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatMessages = document.getElementById('chatMessages');
+            const userMsg = document.createElement('div');
+            userMsg.className = 'chat-message';
+            userMsg.innerHTML = `
+                <div class="message-user">
+                    <div class="message-sender">You</div>
+                    <div>${message}</div>
+                </div>
+            `;
+            chatMessages.appendChild(userMsg);
+            input.value = '';
+
+            const typingIndicator = document.getElementById('typingIndicator');
+            typingIndicator.classList.add('active');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            setTimeout(() => {
+                typingIndicator.classList.remove('active');
+                const aiResponses = [
+                    "I've analyzed your issue. Let me help you with that right away.",
+                    "I found a solution in our knowledge base. Here's what you need to do...",
+                    "Based on similar tickets, I recommend checking your account settings.",
+                    "I've escalated this to our technical team. You'll receive an update within 15 minutes.",
+                    "This is a common issue. I can resolve it automatically for you."
+                ];
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'chat-message';
+                aiMsg.innerHTML = `
+                    <div class="message-ai">
+                        <div class="message-sender">AI Assistant <span class="ai-badge">AI</span></div>
+                        <div>${aiResponses[Math.floor(Math.random() * aiResponses.length)]}</div>
+                    </div>
+                `;
+                chatMessages.appendChild(aiMsg);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1500);
+        }
+
+        document.getElementById('chatInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        const ctx = document.getElementById('analyticsChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                datasets: [{
+                    label: 'Tickets Resolved',
+                    data: [45, 52, 48, 67, 58, 42, 39],
+                    borderColor: '#00d4ff',
+                    backgroundColor: 'rgba(0,212,255,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }, {
+                    label: 'AI Auto-Resolved',
+                    data: [38, 45, 41, 59, 51, 36, 33],
+                    borderColor: '#667eea',
+                    backgroundColor: 'rgba(102,126,234,0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: { color: '#e0e0e0' }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    },
+                    x: {
+                        ticks: { color: '#888' },
+                        grid: { color: 'rgba(255,255,255,0.1)' }
+                    }
+                }
+            }
+        });
+
+        renderTickets();
+        renderKB();
+    </script>
+</body>
+</html>

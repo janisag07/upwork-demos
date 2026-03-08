@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI/ML Development Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
+            color: #e0e0e0;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        header {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #4f46e5;
+            box-shadow: 0 4px 20px rgba(79, 70, 229, 0.1);
+        }
+        
+        header h1 {
+            font-size: 1.8rem;
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        
+        header p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(79, 70, 229, 0.5);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.2);
+        }
+        
+        .card h2 {
+            color: #4f46e5;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .llm-grid {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .llm-item {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        
+        .llm-gpt { border-left-color: #10a37f; }
+        .llm-claude { border-left-color: #d97757; }
+        .llm-gemini { border-left-color: #4285f4; }
+        .llm-llama { border-left-color: #8b5cf6; }
+        
+        .llm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        
+        .llm-name {
+            font-weight: 600;
+        }
+        
+        .llm-badge {
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .llm-stats {
+            color: #aaa;
+            font-size: 0.85rem;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .rag-pipeline {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1.5rem;
+            border-radius: 8px;
+        }
+        
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding: 0.8rem;
+            background: rgba(30, 30, 50, 0.6);
+            border-radius: 8px;
+            border-left: 3px solid #4f46e5;
+            transition: all 0.2s ease;
+        }
+        
+        .pipeline-step:hover {
+            background: rgba(40, 40, 60, 0.8);
+            transform: translateX(5px);
+        }
+        
+        .step-icon {
+            font-size: 1.5rem;
+        }
+        
+        .step-info {
+            flex: 1;
+        }
+        
+        .step-label {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+        
+        .step-desc {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .endpoint-list {
+            display: grid;
+            gap: 0.6rem;
+        }
+        
+        .endpoint {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.8rem;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: monospace;
+            font-size: 0.85rem;
+        }
+        
+        .endpoint-method {
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+        
+        .method-get {
+            background: rgba(0, 217, 255, 0.2);
+            color: #00d9ff;
+        }
+        
+        .method-post {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .method-delete {
+            background: rgba(255, 68, 68, 0.2);
+            color: #ff4444;
+        }
+        
+        .automation-grid {
+            display: grid;
+            gap: 0.8rem;
+        }
+        
+        .automation {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .automation-info {
+            flex: 1;
+        }
+        
+        .automation-name {
+            font-weight: 600;
+            margin-bottom: 0.3rem;
+        }
+        
+        .automation-desc {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        .automation-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-running {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .status-scheduled {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .wide-card {
+            grid-column: 1 / -1;
+        }
+        
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(79, 70, 229, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 0.3rem;
+        }
+        
+        .stat-label {
+            color: #aaa;
+            font-size: 0.85rem;
+        }
+        
+        footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .card { border: 1px solid #ddd; background: white; }
+        }
+        
+        @media (max-width: 768px) {
+            .grid { grid-template-columns: 1fr; }
+            .stats-bar { grid-template-columns: 1fr 1fr; }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>AI/ML Development Dashboard — Comprehensive Integration Hub</p>
+    </header>
+    
+    <div class="container">
+        <div class="stats-bar">
+            <div class="stat-box">
+                <div class="stat-value">12.4k</div>
+                <div class="stat-label">API Calls Today</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">98.7%</div>
+                <div class="stat-label">Success Rate</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">245ms</div>
+                <div class="stat-label">Avg Latency</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-value">$47.30</div>
+                <div class="stat-label">Cost Today</div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>🤖 LLM Integration</h2>
+                <div class="llm-grid">
+                    <div class="llm-item llm-gpt">
+                        <div class="llm-header">
+                            <span class="llm-name">GPT-4o</span>
+                            <span class="llm-badge">Active</span>
+                        </div>
+                        <div class="llm-stats">
+                            <span>3,247 calls</span>
+                            <span>$18.40</span>
+                        </div>
+                    </div>
+                    
+                    <div class="llm-item llm-claude">
+                        <div class="llm-header">
+                            <span class="llm-name">Claude 3.5 Sonnet</span>
+                            <span class="llm-badge">Active</span>
+                        </div>
+                        <div class="llm-stats">
+                            <span>2,891 calls</span>
+                            <span>$15.20</span>
+                        </div>
+                    </div>
+                    
+                    <div class="llm-item llm-gemini">
+                        <div class="llm-header">
+                            <span class="llm-name">Gemini 1.5 Pro</span>
+                            <span class="llm-badge">Active</span>
+                        </div>
+                        <div class="llm-stats">
+                            <span>1,564 calls</span>
+                            <span>$8.90</span>
+                        </div>
+                    </div>
+                    
+                    <div class="llm-item llm-llama">
+                        <div class="llm-header">
+                            <span class="llm-name">Llama 3.1 (Local)</span>
+                            <span class="llm-badge">Active</span>
+                        </div>
+                        <div class="llm-stats">
+                            <span>4,712 calls</span>
+                            <span>$0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>📚 RAG Pipeline</h2>
+                <div class="rag-pipeline">
+                    <div class="pipeline-step">
+                        <div class="step-icon">📄</div>
+                        <div class="step-info">
+                            <div class="step-label">Document Ingestion</div>
+                            <div class="step-desc">PDF, DOCX, TXT parsing</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-icon">✂️</div>
+                        <div class="step-info">
+                            <div class="step-label">Text Chunking</div>
+                            <div class="step-desc">512 token chunks w/ overlap</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-icon">🔢</div>
+                        <div class="step-info">
+                            <div class="step-label">Embedding Generation</div>
+                            <div class="step-desc">OpenAI text-embedding-3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-icon">💾</div>
+                        <div class="step-info">
+                            <div class="step-label">Vector Storage</div>
+                            <div class="step-desc">Pinecone / Weaviate</div>
+                        </div>
+                    </div>
+                    
+                    <div class="pipeline-step">
+                        <div class="step-icon">🔍</div>
+                        <div class="step-info">
+                            <div class="step-label">Semantic Search</div>
+                            <div class="step-desc">Top-k retrieval + rerank</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>🔌 API Endpoints</h2>
+                <div class="endpoint-list">
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-post">POST</span> /api/v1/chat</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-post">POST</span> /api/v1/embed</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-get">GET</span> /api/v1/models</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-post">POST</span> /api/v1/search</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-post">POST</span> /api/v1/train</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-get">GET</span> /api/v1/status</span>
+                    </div>
+                    <div class="endpoint">
+                        <span><span class="endpoint-method method-delete">DEL</span> /api/v1/cache</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>⚙️ Automation Workflows</h2>
+                <div class="automation-grid">
+                    <div class="automation">
+                        <div class="automation-info">
+                            <div class="automation-name">Data Preprocessing</div>
+                            <div class="automation-desc">Clean & normalize incoming data</div>
+                        </div>
+                        <span class="automation-status status-running">Running</span>
+                    </div>
+                    
+                    <div class="automation">
+                        <div class="automation-info">
+                            <div class="automation-name">Model Fine-tuning</div>
+                            <div class="automation-desc">Daily training on new data</div>
+                        </div>
+                        <span class="automation-status status-scheduled">Scheduled</span>
+                    </div>
+                    
+                    <div class="automation">
+                        <div class="automation-info">
+                            <div class="automation-name">Batch Inference</div>
+                            <div class="automation-desc">Process queued predictions</div>
+                        </div>
+                        <span class="automation-status status-running">Running</span>
+                    </div>
+                    
+                    <div class="automation">
+                        <div class="automation-info">
+                            <div class="automation-name">Performance Monitoring</div>
+                            <div class="automation-desc">Track accuracy & latency</div>
+                        </div>
+                        <span class="automation-status status-running">Running</span>
+                    </div>
+                    
+                    <div class="automation">
+                        <div class="automation-info">
+                            <div class="automation-name">Vector DB Sync</div>
+                            <div class="automation-desc">Update embeddings nightly</div>
+                        </div>
+                        <span class="automation-status status-scheduled">Scheduled</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+</body>
+</html>

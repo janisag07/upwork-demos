@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenClaw Setup & Spreadsheet Automation Demo</title>
+    <title>OpenClaw Setup Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -12,343 +12,419 @@
         }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 100%);
             color: #e0e0e0;
+            line-height: 1.6;
             min-height: 100vh;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
         }
         
         header {
-            text-align: center;
-            padding: 30px 0;
-            border-bottom: 2px solid #2a2a3e;
-            margin-bottom: 40px;
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #00d9ff;
+            box-shadow: 0 4px 20px rgba(0, 217, 255, 0.1);
         }
         
         header h1 {
-            font-size: 28px;
-            color: #64ffda;
-            margin-bottom: 10px;
+            font-size: 1.8rem;
+            color: #00d9ff;
+            font-weight: 600;
         }
         
         header p {
             color: #888;
-            font-size: 14px;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem 4rem 2rem;
         }
         
         .grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
         
         .card {
-            background: #1e1e2e;
+            background: rgba(20, 20, 35, 0.8);
+            border: 1px solid rgba(0, 217, 255, 0.2);
             border-radius: 12px;
-            padding: 25px;
-            border: 1px solid #2a2a3e;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(0, 217, 255, 0.5);
+            box-shadow: 0 8px 25px rgba(0, 217, 255, 0.2);
         }
         
         .card h2 {
-            font-size: 18px;
-            margin-bottom: 20px;
-            color: #64ffda;
+            color: #00d9ff;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 0.5rem;
         }
         
         .status-indicator {
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: #4ade80;
             animation: pulse 2s infinite;
         }
+        
+        .status-active { background: #00ff88; }
+        .status-idle { background: #ffaa00; }
+        .status-error { background: #ff4444; }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
         
-        .agent-list {
-            list-style: none;
+        .agent-grid {
+            display: grid;
+            gap: 0.8rem;
         }
         
         .agent-item {
+            background: rgba(0, 217, 255, 0.05);
+            padding: 0.8rem;
+            border-radius: 8px;
+            border-left: 3px solid #00d9ff;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: #252535;
-            border-radius: 8px;
-            border-left: 3px solid #64ffda;
+            transition: all 0.2s ease;
+        }
+        
+        .agent-item:hover {
+            background: rgba(0, 217, 255, 0.1);
+            transform: translateX(5px);
         }
         
         .agent-name {
             font-weight: 500;
+            color: #e0e0e0;
         }
         
         .agent-status {
-            font-size: 12px;
-            padding: 4px 12px;
-            border-radius: 12px;
-            background: #4ade80;
-            color: #0f0f23;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
             font-weight: 600;
-        }
-        
-        .log-container {
-            background: #0a0a15;
-            border-radius: 8px;
-            padding: 15px;
-            height: 300px;
-            overflow-y: auto;
-            font-family: 'Courier New', monospace;
-            font-size: 13px;
-        }
-        
-        .log-entry {
-            margin-bottom: 8px;
-            opacity: 0;
-            animation: fadeIn 0.5s forwards;
-        }
-        
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-        
-        .log-entry.success {
-            color: #4ade80;
-        }
-        
-        .log-entry.info {
-            color: #64ffda;
-        }
-        
-        .log-entry.processing {
-            color: #fbbf24;
-        }
-        
-        .timestamp {
-            color: #666;
-            margin-right: 10px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-        
-        .stat-box {
-            background: #252535;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-        }
-        
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: #64ffda;
-            margin-bottom: 5px;
-        }
-        
-        .stat-label {
-            font-size: 12px;
-            color: #888;
             text-transform: uppercase;
         }
         
-        .btn {
-            background: #64ffda;
-            color: #0f0f23;
-            border: none;
-            padding: 12px 24px;
+        .status-running {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+        
+        .status-paused {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+        
+        .config-panel {
+            background: rgba(30, 30, 50, 0.6);
+            padding: 1.2rem;
             border-radius: 8px;
+            margin-top: 1rem;
+        }
+        
+        .config-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .config-row:last-child {
+            border-bottom: none;
+        }
+        
+        .config-label {
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .config-value {
+            color: #00d9ff;
+            font-weight: 500;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #00d9ff 0%, #0099cc 100%);
+            color: #fff;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 6px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
-            width: 100%;
-            margin-top: 15px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
         }
         
         .btn:hover {
-            background: #4ecdc4;
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 217, 255, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .spreadsheet-container {
+            grid-column: 1 / -1;
+        }
+        
+        .processing-animation {
+            margin-top: 1rem;
+            background: rgba(0, 217, 255, 0.05);
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .row-item {
+            background: rgba(30, 30, 50, 0.8);
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            border-radius: 6px;
+            border-left: 4px solid transparent;
+            transition: all 0.5s ease;
+            opacity: 0;
+            transform: translateX(-20px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .row-item.processing {
+            border-left-color: #ffaa00;
+            opacity: 1;
+            transform: translateX(0);
+            animation: processing 1.5s infinite;
+        }
+        
+        .row-item.completed {
+            border-left-color: #00ff88;
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        @keyframes processing {
+            0%, 100% { background: rgba(30, 30, 50, 0.8); }
+            50% { background: rgba(255, 170, 0, 0.15); }
+        }
+        
+        .row-data {
+            flex: 1;
+        }
+        
+        .row-status {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d9ff, #00ff88);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 10px;
         }
         
         footer {
+            background: rgba(15, 15, 25, 0.95);
+            padding: 1.5rem 2rem;
             text-align: center;
-            padding: 30px 0;
-            border-top: 2px solid #2a2a3e;
-            margin-top: 40px;
             color: #666;
-            font-size: 13px;
+            font-size: 0.85rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: 3rem;
+        }
+        
+        @media print {
+            body { background: white; color: black; }
+            .card { border: 1px solid #ddd; background: white; }
+            .btn { display: none; }
         }
         
         @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
+            .grid { grid-template-columns: 1fr; }
+            header h1 { font-size: 1.4rem; }
+            .container { padding: 0 1rem 2rem 1rem; }
         }
     </style>
 </head>
 <body>
+    <header>
+        <h1>Built by Janis A. — Web Developer & Automation Specialist</h1>
+        <p>OpenClaw Setup Dashboard — Agent Control & Automation</p>
+    </header>
+    
     <div class="container">
-        <header>
-            <h1>🔧 OpenClaw Setup & Spreadsheet Automation</h1>
-            <p>Built by Janis A. — Web Developer & Automation Specialist</p>
-        </header>
-        
         <div class="grid">
             <div class="card">
-                <h2>
-                    <span class="status-indicator"></span>
-                    OpenClaw Status
-                </h2>
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <div class="stat-value" id="uptime">0h</div>
-                        <div class="stat-label">Uptime</div>
+                <h2><span class="status-indicator status-active"></span> Agent Status</h2>
+                <div class="agent-grid">
+                    <div class="agent-item">
+                        <span class="agent-name">Gateway Agent</span>
+                        <span class="agent-status status-running">Running</span>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-value" id="tasks">0</div>
-                        <div class="stat-label">Tasks Completed</div>
+                    <div class="agent-item">
+                        <span class="agent-name">Spreadsheet Bot</span>
+                        <span class="agent-status status-running">Running</span>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-value">7</div>
-                        <div class="stat-label">Active Agents</div>
+                    <div class="agent-item">
+                        <span class="agent-name">WhatsApp Parser</span>
+                        <span class="agent-status status-running">Running</span>
                     </div>
-                    <div class="stat-box">
-                        <div class="stat-value">99.8%</div>
-                        <div class="stat-label">Success Rate</div>
+                    <div class="agent-item">
+                        <span class="agent-name">Discord Handler</span>
+                        <span class="agent-status status-paused">Paused</span>
+                    </div>
+                    <div class="agent-item">
+                        <span class="agent-name">Email Monitor</span>
+                        <span class="agent-status status-running">Running</span>
                     </div>
                 </div>
-                <button class="btn" onclick="restartSystem()">Restart System</button>
+                <button class="btn" style="margin-top: 1rem; width: 100%;" onclick="toggleAgents()">Restart All Agents</button>
             </div>
             
             <div class="card">
-                <h2>🤖 Agent List</h2>
-                <ul class="agent-list">
-                    <li class="agent-item">
-                        <span class="agent-name">Arceus (Main)</span>
-                        <span class="agent-status">ACTIVE</span>
-                    </li>
-                    <li class="agent-item">
-                        <span class="agent-name">Mewtu (Coding)</span>
-                        <span class="agent-status">ACTIVE</span>
-                    </li>
-                    <li class="agent-item">
-                        <span class="agent-name">Mew (QA)</span>
-                        <span class="agent-status">ACTIVE</span>
-                    </li>
-                    <li class="agent-item">
-                        <span class="agent-name">Jirachi (Scoring)</span>
-                        <span class="agent-status">ACTIVE</span>
-                    </li>
-                    <li class="agent-item">
-                        <span class="agent-name">Spreadsheet Bot</span>
-                        <span class="agent-status">ACTIVE</span>
-                    </li>
-                </ul>
+                <h2><span class="status-indicator status-active"></span> Configuration Panel</h2>
+                <div class="config-panel">
+                    <div class="config-row">
+                        <span class="config-label">API Rate Limit</span>
+                        <span class="config-value">100/min</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Auto-Retry</span>
+                        <span class="config-value">Enabled</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Batch Size</span>
+                        <span class="config-value">50 rows</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Error Threshold</span>
+                        <span class="config-value">5%</span>
+                    </div>
+                    <div class="config-row">
+                        <span class="config-label">Notification</span>
+                        <span class="config-value">Discord + Email</span>
+                    </div>
+                </div>
+                <button class="btn btn-secondary" style="margin-top: 1rem; width: 100%;" onclick="alert('Config editor would open here')">Edit Config</button>
             </div>
         </div>
         
-        <div class="card">
-            <h2>📊 Spreadsheet Processing Log</h2>
-            <div class="log-container" id="log"></div>
-            <button class="btn" onclick="startProcessing()">Start Processing</button>
+        <div class="card spreadsheet-container">
+            <h2><span class="status-indicator status-active"></span> Spreadsheet Bot — Live Row Processing</h2>
+            <button class="btn" onclick="startProcessing()">Start Processing Batch</button>
+            <div class="processing-animation" id="processingArea">
+                <div id="rowContainer"></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+            </div>
         </div>
-        
-        <footer>
-            This is an illustrative demo. Data shown is fictional.
-        </footer>
     </div>
     
+    <footer>
+        This is an illustrative demo. Data shown is fictional.
+    </footer>
+    
     <script>
-        let logEntries = [];
-        let processing = false;
-        let taskCount = 0;
-        let uptime = 0;
+        let processingInterval;
+        let currentRow = 0;
+        const totalRows = 8;
         
-        function addLog(message, type = 'info') {
-            const time = new Date().toLocaleTimeString();
-            const entry = `<div class="log-entry ${type}"><span class="timestamp">[${time}]</span>${message}</div>`;
-            logEntries.push(entry);
-            document.getElementById('log').innerHTML = logEntries.join('');
-            document.getElementById('log').scrollTop = document.getElementById('log').scrollHeight;
-        }
+        const sampleData = [
+            { id: 'ROW-001', content: 'Customer Lead: john@example.com', status: 'Processing...' },
+            { id: 'ROW-002', content: 'Order #4521 - Payment Verified', status: 'Processing...' },
+            { id: 'ROW-003', content: 'Support Ticket: Reset Password', status: 'Processing...' },
+            { id: 'ROW-004', content: 'Analytics Data: Daily Report', status: 'Processing...' },
+            { id: 'ROW-005', content: 'Inventory Update: Product SKU-992', status: 'Processing...' },
+            { id: 'ROW-006', content: 'Newsletter Signup: sarah@mail.com', status: 'Processing...' },
+            { id: 'ROW-007', content: 'API Webhook: Payment Success', status: 'Processing...' },
+            { id: 'ROW-008', content: 'CRM Sync: Contact Update', status: 'Processing...' }
+        ];
         
         function startProcessing() {
-            if (processing) return;
-            processing = true;
+            if (processingInterval) return;
             
-            addLog('🚀 Spreadsheet Bot initialized', 'info');
-            addLog('📂 Loading data from Google Sheets...', 'info');
+            document.getElementById('rowContainer').innerHTML = '';
+            currentRow = 0;
+            document.getElementById('progressBar').style.width = '0%';
             
-            setTimeout(() => {
-                addLog('✅ Connected to spreadsheet', 'success');
-                processRows();
-            }, 1000);
-        }
-        
-        function processRows() {
-            const rows = 10;
-            let current = 1;
-            
-            const interval = setInterval(() => {
-                if (current <= rows) {
-                    addLog(`⚙️ Processing Row ${current}...`, 'processing');
-                    
-                    setTimeout(() => {
-                        addLog(`✅ Row ${current} processed successfully`, 'success');
-                        taskCount++;
-                        document.getElementById('tasks').textContent = taskCount;
-                    }, 500);
-                    
-                    current++;
-                } else {
-                    clearInterval(interval);
-                    addLog('🎉 All rows processed. Automation complete!', 'success');
-                    processing = false;
+            processingInterval = setInterval(() => {
+                if (currentRow >= totalRows) {
+                    clearInterval(processingInterval);
+                    processingInterval = null;
+                    return;
                 }
-            }, 1200);
-        }
-        
-        function restartSystem() {
-            addLog('🔄 System restart initiated...', 'info');
-            setTimeout(() => {
-                addLog('✅ System restarted successfully', 'success');
-                uptime = 0;
+                
+                const data = sampleData[currentRow];
+                const rowEl = document.createElement('div');
+                rowEl.className = 'row-item processing';
+                rowEl.innerHTML = `
+                    <div class="row-data">
+                        <strong>${data.id}</strong><br>
+                        <span style="color: #aaa; font-size: 0.9rem;">${data.content}</span>
+                    </div>
+                    <span class="row-status" style="background: rgba(255,170,0,0.2); color: #ffaa00;">${data.status}</span>
+                `;
+                
+                document.getElementById('rowContainer').appendChild(rowEl);
+                
+                setTimeout(() => {
+                    rowEl.classList.remove('processing');
+                    rowEl.classList.add('completed');
+                    rowEl.querySelector('.row-status').innerHTML = '✓ Completed';
+                    rowEl.querySelector('.row-status').style.background = 'rgba(0,255,136,0.2)';
+                    rowEl.querySelector('.row-status').style.color = '#00ff88';
+                }, 1000);
+                
+                currentRow++;
+                const progress = (currentRow / totalRows) * 100;
+                document.getElementById('progressBar').style.width = progress + '%';
+                
             }, 1500);
         }
         
-        // Initialize
-        setInterval(() => {
-            uptime++;
-            const hours = Math.floor(uptime / 3600);
-            const minutes = Math.floor((uptime % 3600) / 60);
-            document.getElementById('uptime').textContent = `${hours}h ${minutes}m`;
-        }, 1000);
-        
-        addLog('🟢 OpenClaw system online', 'success');
-        addLog('🤖 All agents initialized', 'success');
-        addLog('⏳ Waiting for commands...', 'info');
+        function toggleAgents() {
+            alert('All agents would restart. System would reconnect to OpenClaw gateway.');
+        }
     </script>
 </body>
 </html>
