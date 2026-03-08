@@ -429,6 +429,182 @@
         .hidden {
             display: none !important;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .header-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .api-key-section {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+            
+            .api-key-section input {
+                max-width: 100%;
+            }
+            
+            .api-status {
+                text-align: center;
+            }
+            
+            .container {
+                padding: 1rem;
+                overflow-x: hidden;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                overflow-y: hidden;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-card .value {
+                font-size: 1.5rem;
+            }
+            
+            .ticket-form {
+                padding: 1.5rem;
+            }
+            
+            .btn {
+                padding: 0.7rem 1.5rem;
+                font-size: 0.95rem;
+                min-height: 44px;
+            }
+            
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                font-size: 16px; /* Prevent zoom on iOS */
+            }
+            
+            .tickets-list {
+                gap: 0.8rem;
+            }
+            
+            .ticket-item {
+                padding: 1rem;
+            }
+            
+            .ticket-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+            
+            .ticket-detail {
+                padding: 1rem;
+            }
+            
+            .chat-widget {
+                position: static;
+                width: 100%;
+                height: 500px;
+                max-width: 100%;
+                margin: 0;
+                border-radius: 12px;
+            }
+            
+            .chat-message {
+                max-width: 85%;
+            }
+            
+            .chat-input-area {
+                padding: 0.8rem;
+                gap: 0.3rem;
+            }
+            
+            .chat-input-area input {
+                font-size: 16px;
+                padding: 0.7rem;
+            }
+            
+            .kb-search input {
+                font-size: 16px;
+                padding: 0.9rem;
+            }
+            
+            .chart-container {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+            
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            .footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 0.8rem;
+            }
+            
+            .tab {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            
+            .chat-widget {
+                height: 400px;
+            }
+            
+            .chat-message {
+                font-size: 0.9rem;
+                padding: 0.7rem;
+            }
+            
+            .ticket-form {
+                padding: 1rem;
+            }
+        }
     </style>
 </head>
 <body>

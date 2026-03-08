@@ -537,6 +537,287 @@
             border-top: 2px solid #2d3561;
             margin-top: 4rem;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .header-subtitle {
+                font-size: 0.8rem;
+            }
+            
+            .api-key-section {
+                flex-direction: column;
+                align-items: stretch;
+                padding: 1rem;
+                gap: 0.5rem;
+            }
+            
+            .api-key-section label {
+                white-space: normal;
+            }
+            
+            .api-key-section input {
+                max-width: 100%;
+                font-size: 16px;
+            }
+            
+            .platform-toggle {
+                padding: 1rem;
+                gap: 0.5rem;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+            }
+            
+            .platform-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                white-space: nowrap;
+                min-height: 44px;
+            }
+            
+            .container {
+                padding: 1rem;
+                overflow-x: hidden;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                overflow-y: hidden;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .tab {
+                padding: 0.6rem 1rem;
+                font-size: 0.9rem;
+                white-space: nowrap;
+                min-height: 44px;
+            }
+            
+            .chat-container {
+                height: 500px;
+            }
+            
+            .chat-header {
+                padding: 0.8rem;
+            }
+            
+            .chat-avatar {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .chat-messages {
+                padding: 1rem;
+            }
+            
+            .chat-message {
+                max-width: 85%;
+                padding: 0.7rem;
+                font-size: 0.9rem;
+            }
+            
+            .product-recommendation {
+                padding: 0.8rem;
+            }
+            
+            .quick-add-btn {
+                padding: 0.6rem 1rem;
+                min-height: 44px;
+            }
+            
+            .chat-input-area {
+                padding: 0.8rem;
+                gap: 0.3rem;
+            }
+            
+            .chat-input-area input {
+                font-size: 16px;
+                padding: 0.7rem;
+            }
+            
+            .chat-input-area .btn {
+                padding: 0.7rem 1.2rem;
+            }
+            
+            .catalog-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
+            
+            .product-card {
+                font-size: 0.9rem;
+            }
+            
+            .product-image {
+                height: 150px;
+                font-size: 2.5rem;
+            }
+            
+            .product-info {
+                padding: 1rem;
+            }
+            
+            .product-info h3 {
+                font-size: 0.95rem;
+            }
+            
+            .product-info p {
+                font-size: 0.8rem;
+            }
+            
+            .product-footer {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: stretch;
+            }
+            
+            .btn {
+                width: 100%;
+                padding: 0.7rem 1rem;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+            
+            .cart-panel {
+                padding: 1rem;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.8rem;
+                padding: 0.8rem;
+            }
+            
+            .cart-item-controls {
+                justify-content: space-between;
+                width: 100%;
+            }
+            
+            .quantity-control {
+                flex: 1;
+            }
+            
+            .cart-total {
+                font-size: 1.2rem;
+            }
+            
+            .checkout-form {
+                padding: 1rem;
+            }
+            
+            .form-group input,
+            .form-group textarea {
+                font-size: 16px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1rem;
+            }
+            
+            .stat-card .value {
+                font-size: 1.5rem;
+            }
+            
+            .chart-container {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+            
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            .order-list {
+                gap: 0.8rem;
+            }
+            
+            .order-item {
+                padding: 1rem;
+            }
+            
+            .order-header {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            .footer {
+                padding: 1.5rem 1rem;
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 1.1rem;
+            }
+            
+            .platform-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .tab {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.85rem;
+            }
+            
+            .chat-container {
+                height: 400px;
+            }
+            
+            .chat-message {
+                font-size: 0.85rem;
+            }
+            
+            .catalog-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-image {
+                height: 200px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-card {
+                padding: 0.8rem;
+            }
+            
+            .stat-card .value {
+                font-size: 1.3rem;
+            }
+            
+            .cart-item {
+                font-size: 0.9rem;
+            }
+            
+            .cart-total {
+                font-size: 1.1rem;
+            }
+        }
     </style>
 </head>
 <body>
