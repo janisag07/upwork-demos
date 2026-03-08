@@ -919,6 +919,12 @@
                     <h2>Live Chat Interface</h2>
                     <p>AI-powered community engagement in real-time</p>
                 </div>
+                <div id="apiKeyBannerStatic" style="background:linear-gradient(135deg,#1a1a2e,#252538);border:1px solid #6366f1;border-radius:12px;padding:16px 20px;margin:0 0 20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+                    <span style="color:#e4e4f0;font-size:0.9em;font-weight:600;">🔑 OpenAI API Key:</span>
+                    <input type="password" id="apiKeyInput" placeholder="sk-proj-... (enter your key for real AI chat)" style="flex:1;min-width:220px;background:#0f0f1a;border:1px solid #3a3a5e;color:#e4e4f0;padding:10px 14px;border-radius:8px;font-size:0.9em;outline:none;">
+                    <button onclick="saveApiKey()" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;padding:10px 20px;border-radius:8px;cursor:pointer;font-size:0.9em;font-weight:600;">Activate AI</button>
+                    <span id="apiStatus" style="font-size:0.8em;width:100%;margin-top:4px;color:#a0a0b8;">No key = demo mode with preset responses. With key = real AI conversations (uses gpt-4o-mini, ~$0.001/message)</span>
+                </div>
                 <div class="chat-container">
                     <div class="chat-header">
                         <div class="bot-avatar">AI</div>
@@ -1271,19 +1277,12 @@ Your community has:
 
 You help with: onboarding new members, answering questions about events, connecting people for collaborations, moderating discussions, and creating engaging content. Keep responses concise and friendly, use emojis naturally.`;
 
-        // API Key UI
-        const apiKeyBanner = document.createElement('div');
-        apiKeyBanner.style.cssText = 'background:linear-gradient(135deg,#1a1a2e,#252538);border:1px solid #6366f1;border-radius:12px;padding:14px 18px;margin:0 0 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
-        apiKeyBanner.innerHTML = `
-            <span style="color:#a0a0b8;font-size:0.85em;">🔑 Enter your OpenAI API key for real AI chat:</span>
-            <input type="password" id="apiKeyInput" placeholder="sk-..." value="${openaiApiKey}" style="flex:1;min-width:200px;background:#0f0f1a;border:1px solid #2a2a3e;color:#e4e4f0;padding:8px 12px;border-radius:8px;font-size:0.85em;outline:none;">
-            <button onclick="saveApiKey()" style="background:#6366f1;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;">Save</button>
-            <span id="apiStatus" style="font-size:0.75em;color:${openaiApiKey ? '#10b981' : '#a0a0b8'};">${openaiApiKey ? '✅ Key saved — AI active' : 'No key = demo mode'}</span>
-        `;
-        const chatSection = document.getElementById('chat');
-        if (chatSection) {
-            const chatCard = chatSection.querySelector('.card') || chatSection.firstElementChild;
-            if (chatCard) chatSection.insertBefore(apiKeyBanner, chatCard);
+        // API Key UI — loaded from HTML, restore saved key
+        const apiKeyInputEl = document.getElementById('apiKeyInput');
+        if (apiKeyInputEl && openaiApiKey) {
+            apiKeyInputEl.value = openaiApiKey;
+            document.getElementById('apiStatus').textContent = '✅ AI active — start chatting!';
+            document.getElementById('apiStatus').style.color = '#10b981';
         }
 
         function saveApiKey() {
