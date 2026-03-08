@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Helpdesk SaaS Platform - Professional Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #2d3561;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        
+        .header-subtitle {
+            color: #8b92b0;
+            font-size: 0.9rem;
+        }
+        
+        .api-key-section {
+            background: #151b3b;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #2d3561;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .api-key-section label {
+            color: #a5adc8;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .api-key-section input {
+            flex: 1;
+            max-width: 400px;
+            padding: 0.6rem;
+            background: #0a0e27;
+            border: 1px solid #2d3561;
+            border-radius: 6px;
+            color: #e0e6ed;
+            font-size: 0.9rem;
+        }
+        
+        .api-key-section input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .api-status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .api-status.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .api-status.fallback {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid #2d3561;
+            padding-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.7rem 1.5rem;
+            background: #151b3b;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            color: #8b92b0;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        
+        .tab:hover {
+            background: #1f2647;
+            color: #e0e6ed;
+        }
+        
+        .tab.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #1f2647 0%, #151b3b 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+        
+        .stat-card h3 {
+            color: #8b92b0;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .ticket-form {
+            background: #151b3b;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #a5adc8;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.7rem;
+            background: #0a0e27;
+            border: 1px solid #2d3561;
+            border-radius: 6px;
+            color: #e0e6ed;
+            font-size: 0.95rem;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .tickets-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .ticket-item {
+            background: #151b3b;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #2d3561;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .ticket-item:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+        
+        .ticket-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #e0e6ed;
+        }
+        
+        .ticket-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-open { background: #ef4444; color: white; }
+        .status-progress { background: #f59e0b; color: white; }
+        .status-resolved { background: #10b981; color: white; }
+        
+        .ticket-meta {
+            color: #8b92b0;
+            font-size: 0.9rem;
+        }
+        
+        .ticket-detail {
+            background: #151b3b;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 2rem;
+        }
+        
+        .kb-search {
+            margin-bottom: 2rem;
+        }
+        
+        .kb-search input {
+            width: 100%;
+            padding: 1rem;
+            background: #151b3b;
+            border: 1px solid #2d3561;
+            border-radius: 10px;
+            color: #e0e6ed;
+            font-size: 1rem;
+        }
+        
+        .kb-articles {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .kb-article {
+            background: #151b3b;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #2d3561;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .kb-article:hover {
+            border-color: #667eea;
+        }
+        
+        .kb-article h3 {
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .chat-widget {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 380px;
+            height: 500px;
+            background: #151b3b;
+            border-radius: 16px;
+            border: 2px solid #2d3561;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 1rem;
+            border-radius: 14px 14px 0 0;
+            color: white;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .chat-message {
+            padding: 0.8rem;
+            border-radius: 10px;
+            max-width: 80%;
+            animation: slideIn 0.3s;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .chat-message.user {
+            background: #667eea;
+            color: white;
+            align-self: flex-end;
+        }
+        
+        .chat-message.assistant {
+            background: #1f2647;
+            color: #e0e6ed;
+            align-self: flex-start;
+        }
+        
+        .chat-input-area {
+            padding: 1rem;
+            border-top: 1px solid #2d3561;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .chat-input-area input {
+            flex: 1;
+            padding: 0.7rem;
+            background: #0a0e27;
+            border: 1px solid #2d3561;
+            border-radius: 8px;
+            color: #e0e6ed;
+        }
+        
+        .chart-container {
+            background: #151b3b;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container h3 {
+            margin-bottom: 1.5rem;
+            color: #a5adc8;
+        }
+        
+        canvas {
+            max-width: 100%;
+        }
+        
+        .footer {
+            background: #0a0e27;
+            padding: 2rem;
+            text-align: center;
+            color: #8b92b0;
+            border-top: 2px solid #2d3561;
+            margin-top: 4rem;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>AI Helpdesk SaaS Platform</h1>
+        <div class="header-subtitle">Built by Janis A. — Web Developer & Automation Specialist</div>
+    </div>
+    
+    <div class="api-key-section">
+        <label for="apiKey">OpenAI API Key:</label>
+        <input type="password" id="apiKey" placeholder="sk-..." />
+        <span class="api-status fallback" id="apiStatus">Fallback Mode</span>
+    </div>
+    
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('dashboard')">Dashboard</button>
+            <button class="tab" onclick="switchTab('tickets')">Tickets</button>
+            <button class="tab" onclick="switchTab('chat')">Chat</button>
+            <button class="tab" onclick="switchTab('knowledge')">Knowledge Base</button>
+            <button class="tab" onclick="switchTab('analytics')">Analytics</button>
+        </div>
+        
+        <!-- Dashboard Tab -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Open Tickets</h3>
+                    <div class="value" id="openTicketsCount">8</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Resolution Time</h3>
+                    <div class="value">2.4h</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Customer Satisfaction</h3>
+                    <div class="value">94%</div>
+                </div>
+                <div class="stat-card">
+                    <h3>AI Response Rate</h3>
+                    <div class="value">87%</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tickets Tab -->
+        <div id="tickets" class="tab-content">
+            <div class="ticket-form">
+                <h2 style="margin-bottom: 1.5rem;">Create New Ticket</h2>
+                <div class="form-group">
+                    <label>Title</label>
+                    <input type="text" id="ticketTitle" placeholder="Brief description of the issue" />
+                </div>
+                <div class="form-group">
+                    <label>Description</label>
+                    <textarea id="ticketDescription" placeholder="Detailed explanation..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Priority</label>
+                    <select id="ticketPriority">
+                        <option>Low</option>
+                        <option>Medium</option>
+                        <option selected>High</option>
+                        <option>Critical</option>
+                    </select>
+                </div>
+                <button class="btn" onclick="createTicket()">Create Ticket</button>
+            </div>
+            
+            <div id="ticketDetail" class="ticket-detail hidden">
+                <button class="btn" onclick="closeTicketDetail()" style="margin-bottom: 1rem;">← Back to List</button>
+                <div id="ticketDetailContent"></div>
+            </div>
+            
+            <div id="ticketsList" class="tickets-list"></div>
+        </div>
+        
+        <!-- Chat Tab -->
+        <div id="chat" class="tab-content">
+            <div class="chat-widget" style="position: static; width: 100%; height: 600px; max-width: 800px; margin: 0 auto;">
+                <div class="chat-header">
+                    <span>AI Support Assistant</span>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="chat-message assistant">Hello! I'm your AI support assistant. How can I help you today?</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="Type your message..." onkeypress="if(event.key==='Enter') sendChatMessage()" />
+                    <button class="btn" onclick="sendChatMessage()">Send</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Knowledge Base Tab -->
+        <div id="knowledge" class="tab-content">
+            <div class="kb-search">
+                <input type="text" id="kbSearch" placeholder="🔍 Search knowledge base..." onkeyup="filterKB()" />
+            </div>
+            <div class="kb-articles" id="kbArticles"></div>
+        </div>
+        
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="chart-container">
+                <h3>Resolution Time Trend</h3>
+                <canvas id="resolutionChart" width="800" height="300"></canvas>
+            </div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <h3>Total Tickets (30d)</h3>
+                    <div class="value">247</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Resolved</h3>
+                    <div class="value">219</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg First Response</h3>
+                    <div class="value">12min</div>
+                </div>
+                <div class="stat-card">
+                    <h3>CSAT Score</h3>
+                    <div class="value">4.7/5</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Interactive demo — data is simulated. Actual system connects to live APIs.
+    </div>
+    
+    <script>
+        // State management
+        let tickets = [
+            {id: 1, title: 'Login Issue', description: 'Cannot access my account', priority: 'High', status: 'Open', created: '2 hours ago', responses: []},
+            {id: 2, title: 'Payment Failed', description: 'Transaction declined', priority: 'Critical', status: 'In Progress', created: '4 hours ago', responses: [{type: 'ai', text: 'I understand the payment failed. Let me help you resolve this. Can you provide the transaction ID?'}]},
+            {id: 3, title: 'Feature Request', description: 'Add dark mode', priority: 'Low', status: 'Open', created: '1 day ago', responses: []},
+            {id: 4, title: 'Bug Report', description: 'Button not working', priority: 'Medium', status: 'Resolved', created: '2 days ago', responses: [{type: 'ai', text: 'Thank you for reporting this. Our team has fixed the button issue in the latest update.'}]},
+        ];
+        
+        const kbArticles = [
+            {title: 'How to Reset Your Password', content: 'Click on "Forgot Password" on the login page and follow the instructions sent to your email.'},
+            {title: 'Payment Methods Accepted', content: 'We accept Visa, MasterCard, American Express, PayPal, and bank transfers.'},
+            {title: 'Troubleshooting Login Issues', content: 'Clear your browser cache, check your internet connection, and ensure cookies are enabled.'},
+            {title: 'How to Update Billing Information', content: 'Navigate to Account Settings > Billing and click "Update Payment Method".'},
+            {title: 'Subscription Cancellation Policy', content: 'You can cancel anytime. No refunds for partial months. Access continues until end of billing period.'},
+            {title: 'API Integration Guide', content: 'Find your API key in Developer Settings. Use our REST API with Bearer token authentication.'},
+            {title: 'Data Export Instructions', content: 'Go to Settings > Data > Export. Choose format (CSV/JSON) and click Download.'},
+            {title: 'Two-Factor Authentication Setup', content: 'Enable 2FA in Security Settings. Scan QR code with authenticator app and enter verification code.'},
+        ];
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTickets();
+            renderKB();
+            drawChart();
+            
+            document.getElementById('apiKey').addEventListener('input', updateAPIStatus);
+        });
+        
+        function updateAPIStatus() {
+            const key = document.getElementById('apiKey').value;
+            const status = document.getElementById('apiStatus');
+            
+            if (key.startsWith('sk-') && key.length > 20) {
+                status.textContent = 'AI Active';
+                status.className = 'api-status active';
+            } else {
+                status.textContent = 'Fallback Mode';
+                status.className = 'api-status fallback';
+            }
+        }
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+        }
+        
+        async function createTicket() {
+            const title = document.getElementById('ticketTitle').value;
+            const description = document.getElementById('ticketDescription').value;
+            const priority = document.getElementById('ticketPriority').value;
+            
+            if (!title || !description) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const newTicket = {
+                id: tickets.length + 1,
+                title,
+                description,
+                priority,
+                status: 'Open',
+                created: 'Just now',
+                responses: []
+            };
+            
+            // Generate AI response
+            const aiResponse = await generateAIResponse(description);
+            newTicket.responses.push({type: 'ai', text: aiResponse});
+            
+            tickets.unshift(newTicket);
+            renderTickets();
+            
+            // Clear form
+            document.getElementById('ticketTitle').value = '';
+            document.getElementById('ticketDescription').value = '';
+            
+            // Update stats
+            document.getElementById('openTicketsCount').textContent = tickets.filter(t => t.status === 'Open').length;
+            
+            alert('Ticket created! AI response generated.');
+        }
+        
+        async function generateAIResponse(description) {
+            const apiKey = document.getElementById('apiKey').value;
+            
+            if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-4o-mini',
+                            messages: [{
+                                role: 'system',
+                                content: 'You are a helpful customer support AI. Provide brief, professional responses to support tickets.'
+                            }, {
+                                role: 'user',
+                                content: `Customer issue: ${description}`
+                            }],
+                            max_tokens: 150
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    return data.choices[0].message.content;
+                } catch (error) {
+                    console.error('OpenAI API error:', error);
+                }
+            }
+            
+            // Fallback responses
+            const fallbacks = [
+                "Thank you for reaching out. I've received your ticket and our team will investigate this issue right away. We'll get back to you within 2 hours.",
+                "I understand your concern. Let me look into this for you. In the meantime, have you tried clearing your cache and cookies?",
+                "Thanks for reporting this. I've escalated your ticket to our technical team. You should receive an update within the next hour.",
+                "I appreciate you bringing this to our attention. Could you provide more details about when this issue started?"
+            ];
+            
+            return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+        }
+        
+        function renderTickets() {
+            const list = document.getElementById('ticketsList');
+            list.innerHTML = tickets.map(ticket => `
+                <div class="ticket-item" onclick="showTicketDetail(${ticket.id})">
+                    <div class="ticket-header">
+                        <div class="ticket-title">${ticket.title}</div>
+                        <span class="ticket-status status-${ticket.status.toLowerCase().replace(' ', '')}">${ticket.status}</span>
+                    </div>
+                    <div class="ticket-meta">
+                        ${ticket.priority} Priority • Created ${ticket.created}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function showTicketDetail(ticketId) {
+            const ticket = tickets.find(t => t.id === ticketId);
+            const detail = document.getElementById('ticketDetail');
+            const content = document.getElementById('ticketDetailContent');
+            
+            content.innerHTML = `
+                <h2>${ticket.title}</h2>
+                <div style="color: #8b92b0; margin: 1rem 0;">${ticket.priority} Priority • ${ticket.status} • ${ticket.created}</div>
+                <div style="background: #0a0e27; padding: 1.5rem; border-radius: 8px; margin: 1.5rem 0;">
+                    <strong>Description:</strong><br/>
+                    ${ticket.description}
+                </div>
+                <h3 style="margin: 2rem 0 1rem;">Responses</h3>
+                ${ticket.responses.map(r => `
+                    <div style="background: ${r.type === 'ai' ? '#1f2647' : '#667eea'}; padding: 1rem; border-radius: 8px; margin: 1rem 0;">
+                        <strong>${r.type === 'ai' ? '🤖 AI Assistant' : '👤 Support Agent'}</strong><br/>
+                        ${r.text}
+                    </div>
+                `).join('')}
+                ${ticket.responses.length === 0 ? '<div style="color: #8b92b0; font-style: italic;">No responses yet.</div>' : ''}
+            `;
+            
+            document.getElementById('ticketsList').classList.add('hidden');
+            detail.classList.remove('hidden');
+        }
+        
+        function closeTicketDetail() {
+            document.getElementById('ticketDetail').classList.add('hidden');
+            document.getElementById('ticketsList').classList.remove('hidden');
+        }
+        
+        async function sendChatMessage() {
+            const input = document.getElementById('chatInput');
+            const messages = document.getElementById('chatMessages');
+            const userMessage = input.value.trim();
+            
+            if (!userMessage) return;
+            
+            // Add user message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-message user';
+            userDiv.textContent = userMessage;
+            messages.appendChild(userDiv);
+            
+            input.value = '';
+            messages.scrollTop = messages.scrollHeight;
+            
+            // Generate AI response
+            const apiKey = document.getElementById('apiKey').value;
+            let aiResponse = '';
+            
+            if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+                try {
+                    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-4o-mini',
+                            messages: [{
+                                role: 'system',
+                                content: 'You are a helpful customer support AI assistant. Be friendly and professional.'
+                            }, {
+                                role: 'user',
+                                content: userMessage
+                            }],
+                            max_tokens: 150
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    aiResponse = data.choices[0].message.content;
+                } catch (error) {
+                    aiResponse = "I apologize, but I'm having trouble connecting right now. Please try again or contact our support team.";
+                }
+            } else {
+                // Fallback responses
+                const fallbacks = {
+                    'hello': 'Hello! How can I assist you today?',
+                    'help': 'I can help you with account issues, billing questions, technical problems, and more. What do you need help with?',
+                    'billing': 'For billing inquiries, please check our Knowledge Base or create a ticket. I can also assist you right here!',
+                    'default': 'Thank you for your message. Our team will assist you shortly. In the meantime, check our Knowledge Base for instant answers!'
+                };
+                
+                const key = Object.keys(fallbacks).find(k => userMessage.toLowerCase().includes(k));
+                aiResponse = fallbacks[key] || fallbacks['default'];
+            }
+            
+            // Add AI response
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'chat-message assistant';
+                aiDiv.textContent = aiResponse;
+                messages.appendChild(aiDiv);
+                messages.scrollTop = messages.scrollHeight;
+            }, 500);
+        }
+        
+        function renderKB() {
+            const container = document.getElementById('kbArticles');
+            container.innerHTML = kbArticles.map(article => `
+                <div class="kb-article">
+                    <h3>${article.title}</h3>
+                    <p style="color: #8b92b0;">${article.content}</p>
+                </div>
+            `).join('');
+        }
+        
+        function filterKB() {
+            const query = document.getElementById('kbSearch').value.toLowerCase();
+            const articles = document.querySelectorAll('.kb-article');
+            
+            articles.forEach(article => {
+                const text = article.textContent.toLowerCase();
+                article.style.display = text.includes(query) ? 'block' : 'none';
+            });
+        }
+        
+        function drawChart() {
+            const canvas = document.getElementById('resolutionChart');
+            const ctx = canvas.getContext('2d');
+            const data = [3.2, 2.8, 2.5, 2.9, 2.4, 2.1, 2.4];
+            const labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            
+            const padding = 40;
+            const chartWidth = canvas.width - padding * 2;
+            const chartHeight = canvas.height - padding * 2;
+            const barWidth = chartWidth / data.length;
+            const maxVal = Math.max(...data);
+            
+            // Clear
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw bars
+            data.forEach((val, i) => {
+                const barHeight = (val / maxVal) * chartHeight;
+                const x = padding + i * barWidth + barWidth * 0.2;
+                const y = canvas.height - padding - barHeight;
+                
+                const gradient = ctx.createLinearGradient(0, y, 0, canvas.height - padding);
+                gradient.addColorStop(0, '#667eea');
+                gradient.addColorStop(1, '#764ba2');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth * 0.6, barHeight);
+                
+                // Labels
+                ctx.fillStyle = '#8b92b0';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(labels[i], x + barWidth * 0.3, canvas.height - padding + 20);
+                ctx.fillText(val + 'h', x + barWidth * 0.3, y - 10);
+            });
+            
+            // Axis
+            ctx.strokeStyle = '#2d3561';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+        }
+    </script>
+</body>
+</html>

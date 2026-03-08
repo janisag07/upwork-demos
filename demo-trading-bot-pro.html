@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grid Trading Bot Dashboard - Professional Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0e27;
+            color: #e0e6ed;
+            line-height: 1.6;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f3a 0%, #0a0e27 100%);
+            padding: 1.5rem 2rem;
+            border-bottom: 2px solid #2d3561;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.3rem;
+        }
+        
+        .header-subtitle {
+            color: #8b92b0;
+            font-size: 0.9rem;
+        }
+        
+        .api-key-section {
+            background: #151b3b;
+            padding: 1rem 2rem;
+            border-bottom: 1px solid #2d3561;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .api-key-section label {
+            color: #a5adc8;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        .api-key-section input {
+            flex: 1;
+            max-width: 400px;
+            padding: 0.6rem;
+            background: #0a0e27;
+            border: 1px solid #2d3561;
+            border-radius: 6px;
+            color: #e0e6ed;
+            font-size: 0.9rem;
+        }
+        
+        .api-status {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .api-status.active {
+            background: #10b981;
+            color: white;
+        }
+        
+        .api-status.fallback {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .panel {
+            background: #151b3b;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+        }
+        
+        .panel h2 {
+            margin-bottom: 1.5rem;
+            color: #a5adc8;
+            font-size: 1.2rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 2rem;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .btn-start {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-stop {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        
+        .btn-pause {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+        
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        
+        .status-running {
+            background: #10b981;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-stopped {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .status-paused {
+            background: #f59e0b;
+            color: white;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        canvas {
+            width: 100%;
+            background: #0a0e27;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, #1f2647 0%, #151b3b 100%);
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #2d3561;
+        }
+        
+        .stat-box h3 {
+            color: #8b92b0;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+        }
+        
+        .stat-box .value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .value.positive {
+            color: #10b981;
+        }
+        
+        .value.negative {
+            color: #ef4444;
+        }
+        
+        .value.neutral {
+            color: #667eea;
+        }
+        
+        .slider-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .slider-group label {
+            display: flex;
+            justify-content: space-between;
+            color: #a5adc8;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .slider-group input[type="range"] {
+            width: 100%;
+            height: 6px;
+            border-radius: 5px;
+            background: #2d3561;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .slider-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+        }
+        
+        .slider-group input[type="range"]::-moz-range-thumb {
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #10b981;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .toggle-group {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: #2d3561;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .toggle.active {
+            background: #10b981;
+        }
+        
+        .toggle::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: left 0.3s;
+        }
+        
+        .toggle.active::after {
+            left: 33px;
+        }
+        
+        .order-book {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem;
+            background: #0a0e27;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .order-item.buy {
+            border-left: 3px solid #10b981;
+        }
+        
+        .order-item.sell {
+            border-left: 3px solid #ef4444;
+        }
+        
+        .trade-history {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .trade-item {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            padding: 0.8rem;
+            background: #0a0e27;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            animation: slideIn 0.5s;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .trade-item.filled {
+            border-left: 3px solid #10b981;
+        }
+        
+        .ai-panel {
+            background: linear-gradient(135deg, #1f2647 0%, #151b3b 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid #2d3561;
+            margin-top: 2rem;
+        }
+        
+        .ai-response {
+            background: #0a0e27;
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            min-height: 100px;
+            color: #a5adc8;
+        }
+        
+        .footer {
+            background: #0a0e27;
+            padding: 2rem;
+            text-align: center;
+            color: #8b92b0;
+            border-top: 2px solid #2d3561;
+            margin-top: 4rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Grid Trading Bot Dashboard</h1>
+        <div class="header-subtitle">Built by Janis A. — Web Developer & Automation Specialist</div>
+    </div>
+    
+    <div class="api-key-section">
+        <label for="apiKey">OpenAI API Key:</label>
+        <input type="password" id="apiKey" placeholder="sk-..." />
+        <span class="api-status fallback" id="apiStatus">Fallback Mode</span>
+    </div>
+    
+    <div class="container">
+        <div class="controls">
+            <button class="btn btn-start" id="btnStart" onclick="startBot()">Start Bot</button>
+            <button class="btn btn-pause" id="btnPause" onclick="pauseBot()" disabled>Pause</button>
+            <button class="btn btn-stop" id="btnStop" onclick="stopBot()" disabled>Stop Bot</button>
+            <span class="status-indicator status-stopped" id="statusIndicator">Stopped</span>
+        </div>
+        
+        <div class="stats-grid">
+            <div class="stat-box">
+                <h3>Current Price</h3>
+                <div class="value neutral" id="currentPrice">$42,567.89</div>
+            </div>
+            <div class="stat-box">
+                <h3>Realized P&L</h3>
+                <div class="value positive" id="realizedPL">+$1,247.32</div>
+            </div>
+            <div class="stat-box">
+                <h3>Unrealized P&L</h3>
+                <div class="value positive" id="unrealizedPL">+$342.18</div>
+            </div>
+            <div class="stat-box">
+                <h3>Total Trades</h3>
+                <div class="value neutral" id="totalTrades">47</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="panel">
+                <h2>Live Price Chart</h2>
+                <canvas id="priceChart" width="800" height="400"></canvas>
+                <div style="color: #8b92b0; font-size: 0.9rem;">
+                    Grid Levels: Buy (Green) | Sell (Red) | Current Price (Blue)
+                </div>
+            </div>
+            
+            <div>
+                <div class="panel">
+                    <h2>Risk Controls</h2>
+                    
+                    <div class="slider-group">
+                        <label>
+                            <span>Stop Loss</span>
+                            <span id="stopLossValue">5%</span>
+                        </label>
+                        <input type="range" id="stopLoss" min="1" max="20" value="5" oninput="updateSlider('stopLoss')" />
+                    </div>
+                    
+                    <div class="slider-group">
+                        <label>
+                            <span>Take Profit</span>
+                            <span id="takeProfitValue">10%</span>
+                        </label>
+                        <input type="range" id="takeProfit" min="5" max="50" value="10" oninput="updateSlider('takeProfit')" />
+                    </div>
+                    
+                    <div class="slider-group">
+                        <label>
+                            <span>Position Size</span>
+                            <span id="positionSizeValue">$1000</span>
+                        </label>
+                        <input type="range" id="positionSize" min="100" max="10000" value="1000" step="100" oninput="updateSlider('positionSize')" />
+                    </div>
+                    
+                    <div class="toggle-group">
+                        <span style="color: #a5adc8; font-weight: 500;">Pump Protection</span>
+                        <div class="toggle" id="pumpToggle" onclick="togglePump()"></div>
+                    </div>
+                    
+                    <div class="slider-group" id="pumpThresholdGroup" style="opacity: 0.5; pointer-events: none;">
+                        <label>
+                            <span>Threshold</span>
+                            <span id="pumpThresholdValue">15%</span>
+                        </label>
+                        <input type="range" id="pumpThreshold" min="5" max="50" value="15" oninput="updateSlider('pumpThreshold')" />
+                    </div>
+                    
+                    <div class="slider-group">
+                        <label>
+                            <span>Cashflow / Reinvest</span>
+                            <span id="splitValue">50% / 50%</span>
+                        </label>
+                        <input type="range" id="splitRatio" min="0" max="100" value="50" oninput="updateSlider('splitRatio')" />
+                    </div>
+                </div>
+                
+                <div class="panel" style="margin-top: 1rem;">
+                    <h2>Order Book</h2>
+                    <div class="order-book" id="orderBook"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="panel">
+            <h2>Trade History</h2>
+            <div class="trade-history" id="tradeHistory"></div>
+        </div>
+        
+        <div class="ai-panel">
+            <h2>AI Market Analysis</h2>
+            <button class="btn btn-start" onclick="analyzeMarket()">Analyze Current Market</button>
+            <div class="ai-response" id="aiResponse">
+                Click "Analyze Current Market" to get AI-powered insights...
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        Interactive demo — data is simulated. Actual system connects to live APIs.
+    </div>
+    
+    <script>
+        // State
+        let botStatus = 'stopped';
+        let currentPrice = 42567.89;
+        let priceHistory = [];
+        let gridLevels = { buy: [], sell: [] };
+        let orders = [];
+        let trades = [];
+        let priceInterval = null;
+        let pumpProtectionEnabled = false;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initializePrice();
+            generateGridLevels();
+            generateOrders();
+            generateTrades();
+            renderOrders();
+            renderTrades();
+            drawChart();
+            
+            document.getElementById('apiKey').addEventListener('input', updateAPIStatus);
+        });
+        
+        function updateAPIStatus() {
+            const key = document.getElementById('apiKey').value;
+            const status = document.getElementById('apiStatus');
+            
+            if (key.startsWith('sk-') && key.length > 20) {
+                status.textContent = 'AI Active';
+                status.className = 'api-status active';
+            } else {
+                status.textContent = 'Fallback Mode';
+                status.className = 'api-status fallback';
+            }
+        }
+        
+        function initializePrice() {
+            for (let i = 0; i < 100; i++) {
+                priceHistory.push(currentPrice + (Math.random() - 0.5) * 1000);
+            }
+        }
+        
+        function generateGridLevels() {
+            const gridSize = 500;
+            for (let i = 1; i <= 5; i++) {
+                gridLevels.buy.push(currentPrice - (gridSize * i));
+                gridLevels.sell.push(currentPrice + (gridSize * i));
+            }
+        }
+        
+        function generateOrders() {
+            gridLevels.buy.forEach((price, i) => {
+                orders.push({
+                    type: 'buy',
+                    price: price.toFixed(2),
+                    amount: (0.01 + Math.random() * 0.02).toFixed(4),
+                    id: `B${i}`
+                });
+            });
+            gridLevels.sell.forEach((price, i) => {
+                orders.push({
+                    type: 'sell',
+                    price: price.toFixed(2),
+                    amount: (0.01 + Math.random() * 0.02).toFixed(4),
+                    id: `S${i}`
+                });
+            });
+        }
+        
+        function generateTrades() {
+            const times = ['2m ago', '5m ago', '12m ago', '18m ago', '25m ago'];
+            times.forEach((time, i) => {
+                trades.push({
+                    time,
+                    type: i % 2 === 0 ? 'BUY' : 'SELL',
+                    price: (currentPrice + (Math.random() - 0.5) * 1000).toFixed(2),
+                    amount: (0.015 + Math.random() * 0.01).toFixed(4),
+                    status: 'filled'
+                });
+            });
+        }
+        
+        function startBot() {
+            botStatus = 'running';
+            document.getElementById('btnStart').disabled = true;
+            document.getElementById('btnPause').disabled = false;
+            document.getElementById('btnStop').disabled = false;
+            document.getElementById('statusIndicator').className = 'status-indicator status-running';
+            document.getElementById('statusIndicator').textContent = 'Running';
+            
+            priceInterval = setInterval(() => {
+                updatePrice();
+                if (Math.random() > 0.7) {
+                    addTrade();
+                }
+            }, 2000);
+        }
+        
+        function pauseBot() {
+            if (botStatus === 'running') {
+                botStatus = 'paused';
+                document.getElementById('statusIndicator').className = 'status-indicator status-paused';
+                document.getElementById('statusIndicator').textContent = 'Paused';
+                clearInterval(priceInterval);
+            } else if (botStatus === 'paused') {
+                startBot();
+            }
+        }
+        
+        function stopBot() {
+            botStatus = 'stopped';
+            document.getElementById('btnStart').disabled = false;
+            document.getElementById('btnPause').disabled = true;
+            document.getElementById('btnStop').disabled = true;
+            document.getElementById('statusIndicator').className = 'status-indicator status-stopped';
+            document.getElementById('statusIndicator').textContent = 'Stopped';
+            clearInterval(priceInterval);
+        }
+        
+        function updatePrice() {
+            const change = (Math.random() - 0.5) * 200;
+            currentPrice += change;
+            priceHistory.push(currentPrice);
+            if (priceHistory.length > 100) priceHistory.shift();
+            
+            document.getElementById('currentPrice').textContent = '$' + currentPrice.toFixed(2);
+            
+            // Update P&L
+            const unrealized = parseFloat(document.getElementById('unrealizedPL').textContent.replace(/[^0-9.-]/g, ''));
+            const newUnrealized = unrealized + (Math.random() - 0.5) * 50;
+            document.getElementById('unrealizedPL').textContent = (newUnrealized >= 0 ? '+$' : '-$') + Math.abs(newUnrealized).toFixed(2);
+            document.getElementById('unrealizedPL').className = newUnrealized >= 0 ? 'value positive' : 'value negative';
+            
+            drawChart();
+        }
+        
+        function addTrade() {
+            const newTrade = {
+                time: 'Just now',
+                type: Math.random() > 0.5 ? 'BUY' : 'SELL',
+                price: currentPrice.toFixed(2),
+                amount: (0.015 + Math.random() * 0.01).toFixed(4),
+                status: 'filled'
+            };
+            
+            trades.unshift(newTrade);
+            if (trades.length > 10) trades.pop();
+            
+            // Update stats
+            const totalTrades = parseInt(document.getElementById('totalTrades').textContent);
+            document.getElementById('totalTrades').textContent = totalTrades + 1;
+            
+            const realized = parseFloat(document.getElementById('realizedPL').textContent.replace(/[^0-9.-]/g, ''));
+            const profit = (Math.random() - 0.3) * 100;
+            const newRealized = realized + profit;
+            document.getElementById('realizedPL').textContent = (newRealized >= 0 ? '+$' : '-$') + Math.abs(newRealized).toFixed(2);
+            document.getElementById('realizedPL').className = newRealized >= 0 ? 'value positive' : 'value negative';
+            
+            renderTrades();
+        }
+        
+        function renderOrders() {
+            const container = document.getElementById('orderBook');
+            container.innerHTML = orders.map(order => `
+                <div class="order-item ${order.type}">
+                    <span>${order.type.toUpperCase()}</span>
+                    <span>$${order.price}</span>
+                    <span>${order.amount} BTC</span>
+                </div>
+            `).join('');
+        }
+        
+        function renderTrades() {
+            const container = document.getElementById('tradeHistory');
+            container.innerHTML = trades.map(trade => `
+                <div class="trade-item ${trade.status}">
+                    <span>${trade.time}</span>
+                    <span style="color: ${trade.type === 'BUY' ? '#10b981' : '#ef4444'}">${trade.type}</span>
+                    <span>$${trade.price}</span>
+                    <span>${trade.amount} BTC</span>
+                </div>
+            `).join('');
+        }
+        
+        function drawChart() {
+            const canvas = document.getElementById('priceChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear
+            ctx.fillStyle = '#0a0e27';
+            ctx.fillRect(0, 0, width, height);
+            
+            if (priceHistory.length === 0) return;
+            
+            const padding = 40;
+            const chartWidth = width - padding * 2;
+            const chartHeight = height - padding * 2;
+            
+            const minPrice = Math.min(...priceHistory, ...gridLevels.buy, ...gridLevels.sell);
+            const maxPrice = Math.max(...priceHistory, ...gridLevels.buy, ...gridLevels.sell);
+            const priceRange = maxPrice - minPrice;
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#2d3561';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (chartHeight / 5) * i;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+            
+            // Draw buy levels
+            ctx.strokeStyle = '#10b981';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([5, 5]);
+            gridLevels.buy.forEach(price => {
+                const y = height - padding - ((price - minPrice) / priceRange * chartHeight);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            });
+            
+            // Draw sell levels
+            ctx.strokeStyle = '#ef4444';
+            gridLevels.sell.forEach(price => {
+                const y = height - padding - ((price - minPrice) / priceRange * chartHeight);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            });
+            ctx.setLineDash([]);
+            
+            // Draw price line
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            priceHistory.forEach((price, i) => {
+                const x = padding + (chartWidth / (priceHistory.length - 1)) * i;
+                const y = height - padding - ((price - minPrice) / priceRange * chartHeight);
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            ctx.stroke();
+            
+            // Current price indicator
+            const currentY = height - padding - ((currentPrice - minPrice) / priceRange * chartHeight);
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.arc(width - padding, currentY, 6, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
+        function updateSlider(id) {
+            const slider = document.getElementById(id);
+            const value = slider.value;
+            
+            if (id === 'stopLoss' || id === 'takeProfit' || id === 'pumpThreshold') {
+                document.getElementById(id + 'Value').textContent = value + '%';
+            } else if (id === 'positionSize') {
+                document.getElementById(id + 'Value').textContent = '$' + value;
+            } else if (id === 'splitRatio') {
+                const cash = value;
+                const reinvest = 100 - value;
+                document.getElementById('splitValue').textContent = `${cash}% / ${reinvest}%`;
+            }
+        }
+        
+        function togglePump() {
+            pumpProtectionEnabled = !pumpProtectionEnabled;
+            const toggle = document.getElementById('pumpToggle');
+            const group = document.getElementById('pumpThresholdGroup');
+            
+            toggle.classList.toggle('active');
+            
+            if (pumpProtectionEnabled) {
+                group.style.opacity = '1';
+                group.style.pointerEvents = 'auto';
+            } else {
+                group.style.opacity = '0.5';
+                group.style.pointerEvents = 'none';
+            }
+        }
+        
+        async function analyzeMarket() {
+            const response = document.getElementById('aiResponse');
+            response.textContent = 'Analyzing market conditions...';
+            
+            const apiKey = document.getElementById('apiKey').value;
+            const priceChange = ((currentPrice - priceHistory[0]) / priceHistory[0] * 100).toFixed(2);
+            const volatility = (Math.max(...priceHistory) - Math.min(...priceHistory)).toFixed(2);
+            
+            if (apiKey.startsWith('sk-') && apiKey.length > 20) {
+                try {
+                    const aiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${apiKey}`
+                        },
+                        body: JSON.stringify({
+                            model: 'gpt-4o-mini',
+                            messages: [{
+                                role: 'system',
+                                content: 'You are a crypto trading analyst. Provide brief, actionable insights.'
+                            }, {
+                                role: 'user',
+                                content: `Analyze this market: Current BTC price: $${currentPrice.toFixed(2)}, Price change: ${priceChange}%, Volatility: $${volatility}. Grid trading bot is active. Provide recommendation.`
+                            }],
+                            max_tokens: 200
+                        })
+                    });
+                    
+                    const data = await aiResponse.json();
+                    response.textContent = data.choices[0].message.content;
+                } catch (error) {
+                    response.textContent = 'Error connecting to AI. Using fallback analysis...';
+                    setTimeout(() => fallbackAnalysis(response, priceChange), 1000);
+                }
+            } else {
+                setTimeout(() => fallbackAnalysis(response, priceChange), 1000);
+            }
+        }
+        
+        function fallbackAnalysis(element, priceChange) {
+            let analysis = '';
+            
+            if (priceChange > 2) {
+                analysis = `🟢 BULLISH SIGNAL: Market showing strong upward momentum (+${priceChange}%). Grid bot is capturing profits on sell levels. Consider tightening stop-loss to lock gains. Current volatility suggests good grid trading conditions.`;
+            } else if (priceChange < -2) {
+                analysis = `🔴 BEARISH SIGNAL: Market in downtrend (${priceChange}%). Bot accumulating at buy levels. Consider widening grid spacing if volatility increases. Monitor support levels closely.`;
+            } else {
+                analysis = `🟡 NEUTRAL MARKET: Price consolidating (${priceChange}%). Ideal conditions for grid trading. Bot executing buy-low, sell-high strategy effectively. Maintain current parameters.`;
+            }
+            
+            analysis += `\n\nRecommendation: ${pumpProtectionEnabled ? 'Pump protection active - good risk management.' : 'Consider enabling pump protection.'}`;
+            
+            element.textContent = analysis;
+        }
+    </script>
+</body>
+</html>
