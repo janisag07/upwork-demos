@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Community Manager — Interactive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-primary: #0f0f1a;
+            --bg-secondary: #1a1a2e;
+            --bg-tertiary: #252538;
+            --accent-primary: #6366f1;
+            --accent-secondary: #8b5cf6;
+            --text-primary: #e4e4f0;
+            --text-secondary: #a0a0b8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #2a2a3e;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow-x: hidden;
+        }
+
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 260px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 100;
+            transition: transform 0.3s ease;
+        }
+
+        .logo {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo h1 {
+            font-size: 1.4rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .logo p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-items {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            padding: 0.9rem 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            color: var(--text-secondary);
+        }
+
+        .nav-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.15);
+            border-left-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 260px;
+            padding: 2rem;
+        }
+
+        .header {
+            background: var(--bg-secondary);
+            padding: 1.5rem 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border);
+        }
+
+        .header h2 {
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+        }
+
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Chat Interface */
+        .chat-container {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+            max-width: 800px;
+            margin: 0 auto;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: var(--bg-tertiary);
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .bot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.8rem;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .message.bot .message-avatar {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+        }
+
+        .message.user .message-avatar {
+            background: var(--bg-tertiary);
+        }
+
+        .message-content {
+            max-width: 70%;
+        }
+
+        .message.user .message-content {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.8rem 1.2rem;
+            border-radius: 16px 16px 4px 16px;
+        }
+
+        .message.bot .message-content {
+            background: var(--bg-tertiary);
+            padding: 0.8rem 1.2rem;
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.3rem;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 0.8rem 1.2rem;
+            background: var(--bg-tertiary);
+            border-radius: 16px;
+            width: fit-content;
+        }
+
+        .typing-indicator.active {
+            display: block;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--text-secondary);
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+            30% { transform: translateY(-10px); opacity: 1; }
+        }
+
+        .chat-input-container {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .chat-input {
+            width: 100%;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.8rem 1rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: var(--accent-primary);
+        }
+
+        /* Content Generator */
+        .generator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .generator-panel {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .post-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .category-btn {
+            padding: 0.8rem 1rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .category-btn:hover {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+        }
+
+        .generate-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .post-preview {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            min-height: 200px;
+            position: relative;
+        }
+
+        .post-preview h4 {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .post-content {
+            line-height: 1.6;
+        }
+
+        .platform-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .platform-tab {
+            padding: 0.5rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .platform-tab.active {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        /* Analytics Dashboard */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--success);
+        }
+
+        .chart-container {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container h3 {
+            margin-bottom: 1.5rem;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .top-members {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 0.8rem;
+        }
+
+        .member-rank {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-weight: 600;
+            margin-bottom: 0.2rem;
+        }
+
+        .member-stats {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Moderation Panel */
+        .moderation-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .message-feed {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            height: 600px;
+            overflow-y: auto;
+        }
+
+        .mod-message {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 3px solid transparent;
+            animation: slideIn 0.3s ease;
+        }
+
+        .mod-message.spam {
+            border-left-color: var(--danger);
+        }
+
+        .mod-message.toxic {
+            border-left-color: var(--warning);
+        }
+
+        .mod-message.clean {
+            border-left-color: var(--success);
+        }
+
+        .mod-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+        }
+
+        .mod-user {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .mod-label {
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .mod-label.spam {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+
+        .mod-label.toxic {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .mod-label.clean {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .mod-text {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            line-height: 1.5;
+        }
+
+        .mod-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .mod-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .mod-btn.approve {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+
+        .mod-btn.reject {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+
+        .mod-btn:hover {
+            opacity: 0.8;
+        }
+
+        .mod-stats {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .mod-stat-item {
+            padding: 1rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .mod-stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mod-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        /* Scheduling Board */
+        .scheduling-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .calendar-header {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 12px 12px 0 0;
+            border: 1px solid var(--border);
+            border-bottom: none;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-grid {
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border-radius: 0 0 12px 12px;
+            border: 1px solid var(--border);
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1rem;
+        }
+
+        .calendar-day {
+            background: var(--bg-tertiary);
+            padding: 1rem;
+            border-radius: 8px;
+            min-height: 120px;
+            border: 1px solid var(--border);
+        }
+
+        .day-header {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .scheduled-post {
+            background: var(--accent-primary);
+            padding: 0.5rem;
+            border-radius: 6px;
+            margin-bottom: 0.5rem;
+            font-size: 0.75rem;
+            cursor: move;
+            transition: transform 0.2s ease;
+        }
+
+        .scheduled-post:hover {
+            transform: scale(1.05);
+        }
+
+        .scheduled-post.discord {
+            background: #5865f2;
+        }
+
+        .scheduled-post.telegram {
+            background: #0088cc;
+        }
+
+        /* Onboarding Flow */
+        .flow-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .flow-steps {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .flow-line {
+            position: absolute;
+            top: 20px;
+            left: 10%;
+            right: 10%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .flow-step {
+            width: 100px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border);
+            margin: 0 auto 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .flow-step.active .step-circle {
+            background: var(--accent-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .flow-step.completed .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .step-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .flow-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .flow-content h3 {
+            margin-bottom: 1rem;
+        }
+
+        .flow-content p {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .funnel-chart {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .funnel-step {
+            background: var(--bg-tertiary);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .funnel-bar {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.3), rgba(139, 92, 246, 0.3));
+            transition: width 1s ease;
+        }
+
+        .funnel-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .funnel-label {
+            font-weight: 600;
+        }
+
+        .funnel-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            margin-top: 3rem;
+            text-align: center;
+        }
+
+        .footer h3 {
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .footer p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .generator-grid,
+            .moderation-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .flow-steps {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .flow-line {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>AI Community Pro</h1>
+                <p>Intelligent Management</p>
+            </div>
+            <nav class="nav-items">
+                <div class="nav-item active" data-section="chat">
+                    <span class="nav-icon">💬</span>
+                    <span>Live Chat</span>
+                </div>
+                <div class="nav-item" data-section="generator">
+                    <span class="nav-icon">✨</span>
+                    <span>Content Generator</span>
+                </div>
+                <div class="nav-item" data-section="analytics">
+                    <span class="nav-icon">📊</span>
+                    <span>Analytics</span>
+                </div>
+                <div class="nav-item" data-section="moderation">
+                    <span class="nav-icon">🛡️</span>
+                    <span>Auto-Moderation</span>
+                </div>
+                <div class="nav-item" data-section="scheduling">
+                    <span class="nav-icon">📅</span>
+                    <span>Scheduling</span>
+                </div>
+                <div class="nav-item" data-section="onboarding">
+                    <span class="nav-icon">🚀</span>
+                    <span>Onboarding</span>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Chat Section -->
+            <section class="section active" id="chat">
+                <div class="header">
+                    <h2>Live Chat Interface</h2>
+                    <p>AI-powered community engagement in real-time</p>
+                </div>
+                <div class="chat-container">
+                    <div class="chat-header">
+                        <div class="bot-avatar">AI</div>
+                        <div>
+                            <div style="font-weight: 600;">Community AI Bot</div>
+                            <div style="font-size: 0.85rem; color: var(--text-secondary);">Online • Ready to help</div>
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="chatMessages">
+                        <div class="message bot">
+                            <div class="message-avatar"></div>
+                            <div class="message-content">
+                                <div>Welcome to the Arts & Tech Community! 🎨 I'm your AI assistant. How can I help you today?</div>
+                                <div class="message-time">14:23</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <div class="typing-indicator" id="typingIndicator">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <input type="text" class="chat-input" id="chatInput" placeholder="Type your message...">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Content Generator Section -->
+            <section class="section" id="generator">
+                <div class="header">
+                    <h2>Content Generator</h2>
+                    <p>Create engaging posts for Discord & Telegram</p>
+                </div>
+                <div class="generator-grid">
+                    <div class="generator-panel">
+                        <h3 style="margin-bottom: 1.5rem;">Post Categories</h3>
+                        <div class="post-categories">
+                            <button class="category-btn" data-category="event">Event Announcement</button>
+                            <button class="category-btn" data-category="discussion">Discussion Starter</button>
+                            <button class="category-btn" data-category="welcome">Welcome Post</button>
+                            <button class="category-btn" data-category="roundup">Weekly Roundup</button>
+                            <button class="category-btn" data-category="spotlight">Art Spotlight</button>
+                        </div>
+                        <button class="generate-btn" id="generatePost">Generate Post ✨</button>
+                    </div>
+                    <div class="generator-panel">
+                        <h3 style="margin-bottom: 1rem;">Preview</h3>
+                        <div class="platform-tabs">
+                            <div class="platform-tab active" data-platform="discord">Discord</div>
+                            <div class="platform-tab" data-platform="telegram">Telegram</div>
+                        </div>
+                        <div class="post-preview" id="postPreview">
+                            <button class="copy-btn" id="copyPost">Copy</button>
+                            <h4 id="previewPlatform">Discord Preview</h4>
+                            <div class="post-content" id="postContent">
+                                Click "Generate Post" to create content...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section class="section" id="analytics">
+                <div class="header">
+                    <h2>Live Analytics Dashboard</h2>
+                    <p>Real-time community metrics and insights</p>
+                </div>
+                <div class="analytics-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">Total Members</div>
+                        <div class="stat-value" id="totalMembers">1,247</div>
+                        <div class="stat-change">↑ 12.3% this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Engagement Rate</div>
+                        <div class="stat-value" id="engagementRate">78.5%</div>
+                        <div class="stat-change">↑ 5.2% this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Messages/Day</div>
+                        <div class="stat-value" id="messagesPerDay">342</div>
+                        <div class="stat-change">↑ 8.7% this week</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Avg Response Time</div>
+                        <div class="stat-value" id="responseTime">1.2s</div>
+                        <div class="stat-change" style="color: var(--success);">↓ 0.3s faster</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Member Growth (Last 30 Days)</h3>
+                    <canvas id="growthChart" width="800" height="300"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Messages per Day</h3>
+                    <canvas id="messagesChart" width="800" height="300"></canvas>
+                </div>
+
+                <div class="top-members">
+                    <h3 style="margin-bottom: 1.5rem;">Top Active Members</h3>
+                    <div class="member-item">
+                        <div class="member-rank">1</div>
+                        <div class="member-info">
+                            <div class="member-name">@artlover_92</div>
+                            <div class="member-stats">487 messages • 92% response rate</div>
+                        </div>
+                    </div>
+                    <div class="member-item">
+                        <div class="member-rank">2</div>
+                        <div class="member-info">
+                            <div class="member-name">@tech_wizard</div>
+                            <div class="member-stats">423 messages • 88% response rate</div>
+                        </div>
+                    </div>
+                    <div class="member-item">
+                        <div class="member-rank">3</div>
+                        <div class="member-info">
+                            <div class="member-name">@creative_mind</div>
+                            <div class="member-stats">391 messages • 85% response rate</div>
+                        </div>
+                    </div>
+                    <div class="member-item">
+                        <div class="member-rank">4</div>
+                        <div class="member-info">
+                            <div class="member-name">@pixel_artist</div>
+                            <div class="member-stats">356 messages • 83% response rate</div>
+                        </div>
+                    </div>
+                    <div class="member-item">
+                        <div class="member-rank">5</div>
+                        <div class="member-info">
+                            <div class="member-name">@code_master</div>
+                            <div class="member-stats">312 messages • 80% response rate</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Moderation Section -->
+            <section class="section" id="moderation">
+                <div class="header">
+                    <h2>Auto-Moderation Panel</h2>
+                    <p>AI-powered content filtering and safety</p>
+                </div>
+                <div class="moderation-grid">
+                    <div class="message-feed" id="moderationFeed">
+                        <!-- Messages will be inserted here -->
+                    </div>
+                    <div class="mod-stats">
+                        <h3 style="margin-bottom: 1.5rem;">Moderation Stats</h3>
+                        <div class="mod-stat-item">
+                            <div class="mod-stat-label">Messages Scanned</div>
+                            <div class="mod-stat-value" id="scannedCount">1,247</div>
+                        </div>
+                        <div class="mod-stat-item">
+                            <div class="mod-stat-label">Auto-Removed</div>
+                            <div class="mod-stat-value" id="removedCount" style="color: var(--danger);">38</div>
+                        </div>
+                        <div class="mod-stat-item">
+                            <div class="mod-stat-label">False Positive Rate</div>
+                            <div class="mod-stat-value" id="falsePositive" style="color: var(--success);">2.1%</div>
+                        </div>
+                        <div class="mod-stat-item">
+                            <div class="mod-stat-label">Accuracy</div>
+                            <div class="mod-stat-value" id="accuracy" style="color: var(--success);">97.9%</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Scheduling Section -->
+            <section class="section" id="scheduling">
+                <div class="header">
+                    <h2>Scheduling Board</h2>
+                    <p>Plan and organize your community content</p>
+                </div>
+                <div class="scheduling-container">
+                    <div class="platform-tabs" style="margin-bottom: 1rem;">
+                        <div class="platform-tab active" data-schedule-platform="all">All Platforms</div>
+                        <div class="platform-tab" data-schedule-platform="discord">Discord</div>
+                        <div class="platform-tab" data-schedule-platform="telegram">Telegram</div>
+                    </div>
+                    <div class="calendar-header">
+                        <h3>March 2026</h3>
+                        <div style="display: flex; gap: 1rem;">
+                            <button class="category-btn">← Previous</button>
+                            <button class="category-btn">Next →</button>
+                        </div>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day">
+                            <div class="day-header">Mon 3</div>
+                            <div class="scheduled-post discord">Event: Tech Meetup</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Tue 4</div>
+                            <div class="scheduled-post telegram">Weekly Roundup</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Wed 5</div>
+                            <div class="scheduled-post discord">Art Spotlight</div>
+                            <div class="scheduled-post telegram">Discussion</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Thu 6</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Fri 7</div>
+                            <div class="scheduled-post discord">Weekend Event</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Sat 8</div>
+                        </div>
+                        <div class="calendar-day">
+                            <div class="day-header">Sun 9</div>
+                            <div class="scheduled-post telegram">Weekly Summary</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Onboarding Section -->
+            <section class="section" id="onboarding">
+                <div class="header">
+                    <h2>Member Onboarding Flow</h2>
+                    <p>Automated welcome experience for new members</p>
+                </div>
+                <div class="flow-container">
+                    <div class="flow-steps">
+                        <div class="flow-line"></div>
+                        <div class="flow-step active" data-step="1">
+                            <div class="step-circle">1</div>
+                            <div class="step-label">New Member</div>
+                        </div>
+                        <div class="flow-step" data-step="2">
+                            <div class="step-circle">2</div>
+                            <div class="step-label">Welcome DM</div>
+                        </div>
+                        <div class="flow-step" data-step="3">
+                            <div class="step-circle">3</div>
+                            <div class="step-label">Role Assignment</div>
+                        </div>
+                        <div class="flow-step" data-step="4">
+                            <div class="step-circle">4</div>
+                            <div class="step-label">Intro Channel</div>
+                        </div>
+                        <div class="flow-step" data-step="5">
+                            <div class="step-circle">5</div>
+                            <div class="step-label">First Interaction</div>
+                        </div>
+                    </div>
+
+                    <div class="flow-content" id="flowContent">
+                        <h3>Step 1: New Member Joins</h3>
+                        <p>A new member joins the community via Discord or Telegram. The AI bot detects the new member and initiates the onboarding sequence within 5 seconds.</p>
+                        <p><strong>Trigger:</strong> Member join event</p>
+                        <p><strong>Action:</strong> Start automated welcome flow</p>
+                    </div>
+
+                    <div class="funnel-chart">
+                        <h3 style="margin-bottom: 1.5rem;">Conversion Funnel</h3>
+                        <div class="funnel-step">
+                            <div class="funnel-bar" style="width: 100%;"></div>
+                            <div class="funnel-content">
+                                <div class="funnel-label">New Members</div>
+                                <div class="funnel-value">100%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-bar" style="width: 92%;"></div>
+                            <div class="funnel-content">
+                                <div class="funnel-label">Received Welcome DM</div>
+                                <div class="funnel-value">92%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-bar" style="width: 85%;"></div>
+                            <div class="funnel-content">
+                                <div class="funnel-label">Role Assigned</div>
+                                <div class="funnel-value">85%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-bar" style="width: 78%;"></div>
+                            <div class="funnel-content">
+                                <div class="funnel-label">Posted in Intro</div>
+                                <div class="funnel-value">78%</div>
+                            </div>
+                        </div>
+                        <div class="funnel-step">
+                            <div class="funnel-bar" style="width: 71%;"></div>
+                            <div class="funnel-content">
+                                <div class="funnel-label">Active Members</div>
+                                <div class="funnel-value">71%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Footer -->
+            <div class="footer">
+                <h3>Built by Janis A. — Web Developer & Automation Specialist</h3>
+                <p>Interactive demo — data is simulated. Actual system connects to Telegram & Discord APIs.</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Navigation
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const section = item.dataset.section;
+                
+                // Update nav
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                item.classList.add('active');
+                
+                // Update sections
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(section).classList.add('active');
+                
+                // Initialize section-specific features
+                if (section === 'analytics') {
+                    initAnalytics();
+                } else if (section === 'moderation') {
+                    startModeration();
+                }
+            });
+        });
+
+        // Chat Bot Intelligence
+        const chatResponses = {
+            'hello': ['Hey there! 👋 Welcome to our community! How can I help you today?', 'Hello! Great to see you here! What brings you to our Arts & Tech community?'],
+            'hi': ['Hi! 😊 What can I do for you?', 'Hey! Ready to explore our community?'],
+            'help': ['I can help you with:\n• Finding events and meetups\n• Connecting with other members\n• Learning about our community rules\n• Discovering art and tech resources\n\nWhat are you interested in?'],
+            'event': ['🎉 We have several exciting events coming up:\n\n📅 Tech Meetup - March 10th\n🎨 Art Exhibition - March 15th\n💻 Coding Workshop - March 20th\n\nWould you like more details about any of these?'],
+            'join': ['Awesome! 🎉 Welcome aboard! Here\'s what you should do next:\n\n1. Introduce yourself in #introductions\n2. Check out #rules\n3. Explore our events\n4. Connect with other members\n\nNeed any help getting started?'],
+            'rules': ['Our community rules are simple:\n\n✅ Be respectful and kind\n✅ No spam or self-promotion\n✅ Share knowledge freely\n✅ Support each other\n✅ Have fun!\n\nAny questions?'],
+            'thanks': ['You\'re welcome! 😊 Feel free to ask if you need anything else!', 'Happy to help! That\'s what I\'m here for! 🙌'],
+            'art': ['🎨 Our art community is amazing! We have:\n\n• Daily art challenges\n• Portfolio reviews\n• Technique discussions\n• Collaboration opportunities\n\nWhat kind of art are you interested in?'],
+            'tech': ['💻 Our tech community covers:\n\n• Web development\n• Game design\n• AI & Machine Learning\n• Hardware projects\n• Open source\n\nWhat tech are you working with?'],
+            'welcome': ['Thank you! 🌟 We\'re happy to have you here. Our community is all about creativity and innovation. Don\'t hesitate to jump into conversations!'],
+            'bye': ['See you later! 👋 Feel free to come back anytime!', 'Goodbye! Have a great day! ✨'],
+            'question': ['Great question! 🤔 Let me help you with that. Could you be more specific about what you\'d like to know?'],
+            'new': ['Welcome to the community! 🎊 I\'m here to help you get started. Would you like a quick tour of our channels and features?'],
+            'intro': ['Perfect! Head over to #introductions and tell us:\n\n• Your name\n• What you do (art/tech/both)\n• What brings you here\n• Fun fact about yourself!\n\nThe community is super friendly! 😊'],
+            'project': ['That\'s awesome! 🚀 We love seeing what members are working on. You can share your project in:\n\n• #showcase for finished work\n• #work-in-progress for feedback\n• #collaboration if you need help\n\nExcited to see what you\'re building!'],
+            'collaborate': ['Collaboration is what we\'re all about! 🤝 Check out:\n\n• #collaboration-requests\n• #team-finder\n• Weekly collaboration threads\n\nDescribe your project and skills, and I can help match you with others!'],
+            'tutorial': ['We have tons of tutorials! 📚 What are you looking to learn?\n\n• Design\n• Coding\n• 3D modeling\n• Music production\n• Video editing\n\nJust let me know!'],
+            'feedback': ['Getting feedback is super valuable! 💡 Post your work in #feedback with:\n\n• Clear images/links\n• What specific feedback you need\n• Your goals for the project\n\nOur community gives thoughtful, constructive feedback!'],
+            'default': ['I\'m here to help! You can ask me about events, community rules, how to get started, or anything else. What would you like to know?']
+        };
+
+        function getBotResponse(userMessage) {
+            const msg = userMessage.toLowerCase();
+            for (const [key, responses] of Object.entries(chatResponses)) {
+                if (msg.includes(key)) {
+                    return responses[Math.floor(Math.random() * responses.length)];
+                }
+            }
+            return chatResponses.default[0];
+        }
+
+        // Chat functionality
+        const chatInput = document.getElementById('chatInput');
+        const chatMessages = document.getElementById('chatMessages');
+        const typingIndicator = document.getElementById('typingIndicator');
+
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && chatInput.value.trim()) {
+                const userMessage = chatInput.value.trim();
+                
+                // Add user message
+                addMessage(userMessage, 'user');
+                chatInput.value = '';
+                
+                // Show typing indicator
+                typingIndicator.classList.add('active');
+                
+                // Bot response after delay
+                setTimeout(() => {
+                    typingIndicator.classList.remove('active');
+                    const botResponse = getBotResponse(userMessage);
+                    addMessage(botResponse, 'bot');
+                }, 1000 + Math.random() * 1000);
+            }
+        });
+
+        function addMessage(text, type) {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            
+            const time = new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            
+            message.innerHTML = `
+                <div class="message-avatar"></div>
+                <div class="message-content">
+                    <div>${text}</div>
+                    <div class="message-time">${time}</div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(message);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Save to localStorage
+            const history = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+            history.push({ text, type, time });
+            localStorage.setItem('chatHistory', JSON.stringify(history.slice(-50)));
+        }
+
+        // Load chat history
+        const chatHistory = JSON.parse(localStorage.getItem('chatHistory') || '[]');
+        chatHistory.forEach(({ text, type }) => {
+            const message = document.createElement('div');
+            message.className = `message ${type}`;
+            message.innerHTML = `
+                <div class="message-avatar"></div>
+                <div class="message-content">
+                    <div>${text}</div>
+                </div>
+            `;
+            chatMessages.appendChild(message);
+        });
+
+        // Content Generator
+        const postTemplates = {
+            event: [
+                '🎉 **Upcoming Event Alert!**\n\n📅 **Tech & Art Fusion Meetup**\n🕐 March 15th, 7:00 PM\n📍 Virtual + Downtown Hub\n\n Join us for an evening of creativity and innovation! Network with fellow artists and developers, share your projects, and get inspired.\n\n✨ What to expect:\n• Lightning talks on AI in art\n• Live coding + painting session\n• Community showcase\n• Prizes and giveaways!\n\nDrop a 🎨 if you\'re coming!',
+                '🚀 **Workshop Announcement**\n\n**"From Sketch to Code: Building Interactive Art"**\n\n👨‍🏫 Led by @tech_wizard\n📅 This Saturday, 2:00 PM\n⏱️ Duration: 3 hours\n\nLearn to:\n✅ Create generative art with JavaScript\n✅ Build interactive installations\n✅ Deploy your projects\n\nLimited spots! React with ⚡ to register.',
+                '🎊 **Community Showcase Night**\n\n📺 March 20th | 8:00 PM EST\n\nPresent your projects to the community! Whether it\'s art, code, music, or anything creative - we want to see it!\n\n🎤 5 min presentations\n💬 Live Q&A\n🏆 Community voting\n\nInterested? Comment below!'
+            ],
+            discussion: [
+                '💭 **Discussion Topic:**\n\n"How is AI changing your creative workflow?"\n\nI\'ve noticed many of you experimenting with AI tools. Let\'s share:\n\n• Tools you\'re using\n• What works well\n• What doesn\'t\n• Ethical considerations\n\nDrop your thoughts below! 👇',
+                '🤔 **Let\'s Talk:**\n\n**"What\'s the future of collaborative art?"**\n\nWith remote work becoming the norm, how do you see creative collaboration evolving?\n\nShare your:\n✨ Vision for the future\n🛠️ Tools you love\n💡 Dream collaboration\n\nThread below! 🧵',
+                '🎯 **Quick Poll:**\n\nWhat should our next workshop focus on?\n\nA) 3D modeling basics\nB) Music production\nC) Game development\nD) Digital painting\n\nComment your vote + why! Let\'s build content you actually want.'
+            ],
+            welcome: [
+                '👋 **Welcome to the Community!**\n\nHey everyone! We have **5 new members** this week:\n@new_member1, @new_member2, @new_member3, @new_member4, @new_member5\n\n🎨 Artists, developers, creators - we\'re so happy you\'re here!\n\n💡 **Get Started:**\n• Introduce yourself in #introductions\n• Check out ongoing projects in #showcase\n• Join our event this Friday!\n\nLet\'s give them a warm welcome! 🎉',
+                '🌟 **New Members Spotlight**\n\nBig welcome to our newest community members!\n\nThis week we\'re joined by talented folks from all over the world. Each bringing unique skills and perspectives.\n\n👉 Say hi in the comments\n👉 Share what you\'re working on\n👉 Find your creative tribe here\n\nWelcome home! 🏡',
+                '🎊 **Community Growth Update**\n\nWe just hit **1,250 members!** 🚀\n\nFrom our first 10 members to now - what a journey. Every single one of you makes this community special.\n\n💙 Thank you for:\n• Sharing your work\n• Supporting each other\n• Creating amazing things\n• Being awesome humans\n\nHere\'s to the next milestone! 🥂'
+            ],
+            roundup: [
+                '📰 **Weekly Roundup - Week of March 3rd**\n\n🔥 **Top Highlights:**\n• 47 new projects shared\n• 12 collaborations started\n• 3 workshops completed\n• 234 helpful answers given\n\n⭐ **Featured Work:**\n@artlover_92\'s generative art series\n@code_master\'s AI music tool\n@pixel_artist\'s game prototype\n\n📅 **This Week:**\nTech Meetup (Wed), Art Showcase (Fri)\n\nWhat an amazing week! 🎉',
+                '🗓️ **Sunday Summary**\n\nAnother incredible week in the books!\n\n📊 **By the Numbers:**\n• 156 active members\n• 1,247 messages\n• 89 projects in progress\n• 23 completed tutorials\n\n🌟 **Community Wins:**\n✅ @tech_wizard launched their app\n✅ Successful collaborative art piece\n✅ 5 new job opportunities shared\n\n💡 **Next Week Preview:**\nWorkshop marathon + surprise announcement\n\nStay creative! ✨',
+                '🎯 **Monthly Wrap-Up - February**\n\n**Community Stats:**\n📈 +15% member growth\n💬 12,450 messages\n🎨 234 projects showcased\n🤝 67 collaborations formed\n\n**Top Contributors:**\n🥇 @artlover_92\n🥈 @tech_wizard\n🥉 @creative_mind\n\n**March Goals:**\nReach 1,500 members, launch mentorship program, host IRL meetup\n\nTogether we\'re building something special! 💜'
+            ],
+            spotlight: [
+                '🎨 **Art Spotlight: @pixel_artist**\n\n**Project:** "Neon Dreams" - Interactive Pixel Art\n\nThis week\'s featured artist created an incredible retro-futuristic cityscape that responds to music!\n\n✨ **Highlights:**\n• Hand-crafted pixel art\n• Real-time audio reactivity\n• 80s aesthetic perfection\n• Open source code\n\n👀 **Check it out:** [link]\n💬 **Ask questions below!**\n\nAmazing work! 🔥',
+                '⚡ **Creator Spotlight: @tech_wizard**\n\n**Project:** AI-Powered Music Composition Tool\n\nMeet the tool that\'s changing how we create music. Train it on your favorite genres, and it generates unique compositions.\n\n🎵 **Features:**\n• Multiple genre support\n• MIDI export\n• Browser-based\n• Free to use\n\n🚀 **Try it:** [link]\n\nIncredible innovation! 🎹',
+                '🌟 **Project Showcase: Community Mural**\n\n**By:** 15 collaborative artists\n\nOur first community art piece is complete! Each member contributed a tile, creating this stunning digital mosaic.\n\n🎨 **Stats:**\n• 15 artists\n• 3 weeks\n• 1 masterpiece\n• Infinite creativity\n\n💙 **Contributors:** [tagged members]\n\nThis is what community is all about! 🙌'
+            ]
+        };
+
+        let selectedCategory = 'event';
+        let currentPlatform = 'discord';
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                selectedCategory = btn.dataset.category;
+                document.querySelectorAll('.category-btn').forEach(b => b.style.background = 'var(--bg-tertiary)');
+                btn.style.background = 'var(--accent-primary)';
+            });
+        });
+
+        document.getElementById('generatePost').addEventListener('click', () => {
+            const templates = postTemplates[selectedCategory];
+            const post = templates[Math.floor(Math.random() * templates.length)];
+            
+            document.getElementById('postContent').textContent = post;
+            
+            // Animation
+            const preview = document.getElementById('postPreview');
+            preview.style.animation = 'none';
+            setTimeout(() => {
+                preview.style.animation = 'fadeIn 0.4s ease';
+            }, 10);
+        });
+
+        document.querySelectorAll('[data-platform]').forEach(tab => {
+            tab.addEventListener('click', () => {
+                currentPlatform = tab.dataset.platform;
+                document.querySelectorAll('[data-platform]').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById('previewPlatform').textContent = `${currentPlatform.charAt(0).toUpperCase() + currentPlatform.slice(1)} Preview`;
+            });
+        });
+
+        document.getElementById('copyPost').addEventListener('click', () => {
+            const text = document.getElementById('postContent').textContent;
+            navigator.clipboard.writeText(text);
+            
+            const btn = document.getElementById('copyPost');
+            const originalText = btn.textContent;
+            btn.textContent = 'Copied!';
+            btn.style.background = 'var(--success)';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = 'var(--bg-primary)';
+            }, 2000);
+        });
+
+        // Analytics Charts
+        let analyticsInterval;
+
+        function initAnalytics() {
+            // Clear any existing interval
+            if (analyticsInterval) clearInterval(analyticsInterval);
+            
+            drawGrowthChart();
+            drawMessagesChart();
+            
+            // Update stats every 5 seconds
+            analyticsInterval = setInterval(updateStats, 5000);
+        }
+
+        function updateStats() {
+            const totalMembers = document.getElementById('totalMembers');
+            const engagement = document.getElementById('engagementRate');
+            const messages = document.getElementById('messagesPerDay');
+            const responseTime = document.getElementById('responseTime');
+            
+            // Simulate live updates
+            totalMembers.textContent = (1247 + Math.floor(Math.random() * 10)).toLocaleString();
+            engagement.textContent = (78.5 + (Math.random() * 2 - 1)).toFixed(1) + '%';
+            messages.textContent = (342 + Math.floor(Math.random() * 20 - 10)).toLocaleString();
+            responseTime.textContent = (1.2 + (Math.random() * 0.2 - 0.1)).toFixed(1) + 's';
+        }
+
+        function drawGrowthChart() {
+            const canvas = document.getElementById('growthChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Data points
+            const data = [1050, 1078, 1095, 1120, 1145, 1168, 1190, 1210, 1225, 1247];
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min;
+            
+            // Draw grid
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = (height - 40) * (i / 5) + 20;
+                ctx.beginPath();
+                ctx.moveTo(40, y);
+                ctx.lineTo(width - 20, y);
+                ctx.stroke();
+            }
+            
+            // Draw line
+            ctx.strokeStyle = '#6366f1';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            data.forEach((value, index) => {
+                const x = 40 + (width - 60) * (index / (data.length - 1));
+                const y = height - 40 - ((value - min) / range) * (height - 60);
+                
+                if (index === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            });
+            
+            ctx.stroke();
+            
+            // Draw points
+            data.forEach((value, index) => {
+                const x = 40 + (width - 60) * (index / (data.length - 1));
+                const y = height - 40 - ((value - min) / range) * (height - 60);
+                
+                ctx.fillStyle = '#6366f1';
+                ctx.beginPath();
+                ctx.arc(x, y, 4, 0, Math.PI * 2);
+                ctx.fill();
+            });
+            
+            // Labels
+            ctx.fillStyle = '#a0a0b8';
+            ctx.font = '12px sans-serif';
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const value = min + (range * (5 - i) / 5);
+                const y = (height - 40) * (i / 5) + 25;
+                ctx.fillText(Math.round(value).toLocaleString(), 35, y);
+            }
+        }
+
+        function drawMessagesChart() {
+            const canvas = document.getElementById('messagesChart');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const data = [245, 298, 312, 287, 356, 342, 389, 367, 401, 342];
+            const max = Math.max(...data);
+            
+            const barWidth = (width - 100) / data.length - 10;
+            
+            data.forEach((value, index) => {
+                const x = 50 + index * ((width - 100) / data.length);
+                const barHeight = (value / max) * (height - 60);
+                const y = height - 40 - barHeight;
+                
+                // Gradient
+                const gradient = ctx.createLinearGradient(0, y, 0, height - 40);
+                gradient.addColorStop(0, '#6366f1');
+                gradient.addColorStop(1, '#8b5cf6');
+                
+                ctx.fillStyle = gradient;
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Value on top
+                ctx.fillStyle = '#e4e4f0';
+                ctx.font = '11px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText(value, x + barWidth / 2, y - 5);
+            });
+        }
+
+        // Moderation System
+        let moderationInterval;
+        const moderationMessages = [
+            { user: 'user_123', text: 'Check out this amazing deal! Click here: [link]', type: 'spam' },
+            { user: 'creative_soul', text: 'Just finished my latest painting! What do you think?', type: 'clean' },
+            { user: 'toxic_troll', text: 'This community is trash, you all suck', type: 'toxic' },
+            { user: 'helpful_member', text: 'Here\'s a tutorial that might help with that issue', type: 'clean' },
+            { user: 'spammer_bot', text: '💰 Earn money fast! Join now! [suspicious link]', type: 'spam' },
+            { user: 'artist_92', text: 'Looking for feedback on my portfolio site', type: 'clean' },
+            { user: 'angry_user', text: 'You\'re all idiots who don\'t know anything', type: 'toxic' },
+            { user: 'tech_enthusiast', text: 'Has anyone tried the new JavaScript framework?', type: 'clean' },
+            { user: 'promo_account', text: 'Buy followers now! Special discount!', type: 'spam' },
+            { user: 'community_helper', text: 'Welcome! Let me know if you need any help', type: 'clean' },
+            { user: 'developer_joe', text: 'Working on a new open source project, contributions welcome!', type: 'clean' },
+            { user: 'scam_bot', text: '🎁 Free cryptocurrency! Limited time!', type: 'spam' },
+            { user: 'toxic_person', text: 'Your art is terrible and you should quit', type: 'toxic' },
+            { user: 'helpful_dev', text: 'I found a solution to that bug, here\'s a PR', type: 'clean' },
+            { user: 'spam_account', text: 'Make $5000 per week working from home!!!', type: 'spam' }
+        ];
+
+        function startModeration() {
+            const feed = document.getElementById('moderationFeed');
+            feed.innerHTML = '';
+            
+            let scanned = 1247;
+            let removed = 38;
+            
+            moderationInterval = setInterval(() => {
+                const msg = moderationMessages[Math.floor(Math.random() * moderationMessages.length)];
+                
+                const messageEl = document.createElement('div');
+                messageEl.className = `mod-message ${msg.type}`;
+                messageEl.innerHTML = `
+                    <div class="mod-header">
+                        <div class="mod-user">${msg.user}</div>
+                        <div class="mod-label ${msg.type}">${msg.type}</div>
+                    </div>
+                    <div class="mod-text">${msg.text}</div>
+                    <div class="mod-actions">
+                        <button class="mod-btn approve">Approve</button>
+                        <button class="mod-btn reject">Remove</button>
+                    </div>
+                `;
+                
+                // Add to top
+                feed.insertBefore(messageEl, feed.firstChild);
+                
+                // Update stats
+                scanned++;
+                document.getElementById('scannedCount').textContent = scanned.toLocaleString();
+                
+                // Auto-remove spam/toxic after 3 seconds
+                if (msg.type !== 'clean') {
+                    setTimeout(() => {
+                        if (messageEl.parentElement) {
+                            messageEl.style.opacity = '0';
+                            setTimeout(() => {
+                                if (messageEl.parentElement) {
+                                    messageEl.remove();
+                                    removed++;
+                                    document.getElementById('removedCount').textContent = removed;
+                                }
+                            }, 300);
+                        }
+                    }, 3000);
+                }
+                
+                // Button handlers
+                messageEl.querySelector('.approve').addEventListener('click', () => {
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => messageEl.remove(), 300);
+                });
+                
+                messageEl.querySelector('.reject').addEventListener('click', () => {
+                    messageEl.style.opacity = '0';
+                    setTimeout(() => {
+                        messageEl.remove();
+                        removed++;
+                        document.getElementById('removedCount').textContent = removed;
+                    }, 300);
+                });
+                
+                // Keep only last 20 messages
+                while (feed.children.length > 20) {
+                    feed.lastChild.remove();
+                }
+                
+            }, 2000);
+        }
+
+        // Onboarding Flow
+        const flowSteps = [
+            {
+                title: 'Step 1: New Member Joins',
+                content: 'A new member joins the community via Discord or Telegram. The AI bot detects the new member and initiates the onboarding sequence within 5 seconds.<br><br><strong>Trigger:</strong> Member join event<br><strong>Action:</strong> Start automated welcome flow'
+            },
+            {
+                title: 'Step 2: Welcome DM',
+                content: 'Within seconds, the new member receives a personalized welcome DM with:<br>• Community overview<br>• Quick start guide<br>• Link to rules<br>• Invitation to introduce themselves<br><br><strong>92% delivery rate</strong>'
+            },
+            {
+                title: 'Step 3: Role Assignment',
+                content: 'Based on the member\'s interests (collected via welcome form), the AI automatically assigns relevant roles:<br>• Artist<br>• Developer<br>• Designer<br>• Musician<br><br>This unlocks access to specialized channels.<br><br><strong>85% completion rate</strong>'
+            },
+            {
+                title: 'Step 4: Introduction Channel',
+                content: 'New members are guided to #introductions where they can:<br>• Share their background<br>• Post their work<br>• Connect with similar members<br><br>The AI monitors and responds to ensure every intro gets engagement.<br><br><strong>78% participation rate</strong>'
+            },
+            {
+                title: 'Step 5: First Interaction',
+                content: 'Within 24 hours, the AI ensures new members:<br>• Receive at least 3 welcome messages<br>• Get invited to relevant events<br>• Are connected with a mentor<br>• Have posted in at least one channel<br><br><strong>71% become active members</strong>'
+            }
+        ];
+
+        document.querySelectorAll('.flow-step').forEach((step, index) => {
+            step.addEventListener('click', () => {
+                // Update active step
+                document.querySelectorAll('.flow-step').forEach(s => s.classList.remove('active'));
+                step.classList.add('active');
+                
+                // Mark previous steps as completed
+                document.querySelectorAll('.flow-step').forEach((s, i) => {
+                    if (i < index) {
+                        s.classList.add('completed');
+                    } else if (i > index) {
+                        s.classList.remove('completed');
+                    }
+                });
+                
+                // Update content
+                const content = flowSteps[index];
+                document.getElementById('flowContent').innerHTML = `
+                    <h3>${content.title}</h3>
+                    <p>${content.content}</p>
+                `;
+            });
+        });
+
+        // Initial chart draw
+        if (document.getElementById('analytics').classList.contains('active')) {
+            initAnalytics();
+        }
+    </script>
+</body>
+</html>
