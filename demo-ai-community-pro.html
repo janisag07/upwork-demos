@@ -1256,37 +1256,89 @@
             });
         });
 
-        // Chat Bot Intelligence
-        const chatResponses = {
-            'hello': ['Hey there! 👋 Welcome to our community! How can I help you today?', 'Hello! Great to see you here! What brings you to our Arts & Tech community?'],
-            'hi': ['Hi! 😊 What can I do for you?', 'Hey! Ready to explore our community?'],
-            'help': ['I can help you with:\n• Finding events and meetups\n• Connecting with other members\n• Learning about our community rules\n• Discovering art and tech resources\n\nWhat are you interested in?'],
-            'event': ['🎉 We have several exciting events coming up:\n\n📅 Tech Meetup - March 10th\n🎨 Art Exhibition - March 15th\n💻 Coding Workshop - March 20th\n\nWould you like more details about any of these?'],
-            'join': ['Awesome! 🎉 Welcome aboard! Here\'s what you should do next:\n\n1. Introduce yourself in #introductions\n2. Check out #rules\n3. Explore our events\n4. Connect with other members\n\nNeed any help getting started?'],
-            'rules': ['Our community rules are simple:\n\n✅ Be respectful and kind\n✅ No spam or self-promotion\n✅ Share knowledge freely\n✅ Support each other\n✅ Have fun!\n\nAny questions?'],
-            'thanks': ['You\'re welcome! 😊 Feel free to ask if you need anything else!', 'Happy to help! That\'s what I\'m here for! 🙌'],
-            'art': ['🎨 Our art community is amazing! We have:\n\n• Daily art challenges\n• Portfolio reviews\n• Technique discussions\n• Collaboration opportunities\n\nWhat kind of art are you interested in?'],
-            'tech': ['💻 Our tech community covers:\n\n• Web development\n• Game design\n• AI & Machine Learning\n• Hardware projects\n• Open source\n\nWhat tech are you working with?'],
-            'welcome': ['Thank you! 🌟 We\'re happy to have you here. Our community is all about creativity and innovation. Don\'t hesitate to jump into conversations!'],
-            'bye': ['See you later! 👋 Feel free to come back anytime!', 'Goodbye! Have a great day! ✨'],
-            'question': ['Great question! 🤔 Let me help you with that. Could you be more specific about what you\'d like to know?'],
-            'new': ['Welcome to the community! 🎊 I\'m here to help you get started. Would you like a quick tour of our channels and features?'],
-            'intro': ['Perfect! Head over to #introductions and tell us:\n\n• Your name\n• What you do (art/tech/both)\n• What brings you here\n• Fun fact about yourself!\n\nThe community is super friendly! 😊'],
-            'project': ['That\'s awesome! 🚀 We love seeing what members are working on. You can share your project in:\n\n• #showcase for finished work\n• #work-in-progress for feedback\n• #collaboration if you need help\n\nExcited to see what you\'re building!'],
-            'collaborate': ['Collaboration is what we\'re all about! 🤝 Check out:\n\n• #collaboration-requests\n• #team-finder\n• Weekly collaboration threads\n\nDescribe your project and skills, and I can help match you with others!'],
-            'tutorial': ['We have tons of tutorials! 📚 What are you looking to learn?\n\n• Design\n• Coding\n• 3D modeling\n• Music production\n• Video editing\n\nJust let me know!'],
-            'feedback': ['Getting feedback is super valuable! 💡 Post your work in #feedback with:\n\n• Clear images/links\n• What specific feedback you need\n• Your goals for the project\n\nOur community gives thoughtful, constructive feedback!'],
-            'default': ['I\'m here to help! You can ask me about events, community rules, how to get started, or anything else. What would you like to know?']
-        };
+        // AI Chat Configuration
+        let openaiApiKey = localStorage.getItem('openai_api_key') || '';
+        const chatHistoryMessages = [];
+        const SYSTEM_PROMPT = `You are an AI Community Manager for a local Arts & Tech community. You manage both Discord and Telegram channels. Your personality is warm, enthusiastic, and knowledgeable.
 
-        function getBotResponse(userMessage) {
-            const msg = userMessage.toLowerCase();
-            for (const [key, responses] of Object.entries(chatResponses)) {
-                if (msg.includes(key)) {
-                    return responses[Math.floor(Math.random() * responses.length)];
+Your community has:
+- Weekly Tech Meetups (Mondays 7pm)
+- Art Exhibition nights (every 2nd Friday)
+- Coding Workshops (Saturdays 2pm)
+- Channels: #introductions, #showcase, #work-in-progress, #collaboration, #events, #feedback, #rules, #general
+- 1,247 members across both platforms
+- Community rules: Be respectful, no spam, share knowledge, support each other
+
+You help with: onboarding new members, answering questions about events, connecting people for collaborations, moderating discussions, and creating engaging content. Keep responses concise and friendly, use emojis naturally.`;
+
+        // API Key UI
+        const apiKeyBanner = document.createElement('div');
+        apiKeyBanner.style.cssText = 'background:linear-gradient(135deg,#1a1a2e,#252538);border:1px solid #6366f1;border-radius:12px;padding:14px 18px;margin:0 0 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;';
+        apiKeyBanner.innerHTML = `
+            <span style="color:#a0a0b8;font-size:0.85em;">🔑 Enter your OpenAI API key for real AI chat:</span>
+            <input type="password" id="apiKeyInput" placeholder="sk-..." value="${openaiApiKey}" style="flex:1;min-width:200px;background:#0f0f1a;border:1px solid #2a2a3e;color:#e4e4f0;padding:8px 12px;border-radius:8px;font-size:0.85em;outline:none;">
+            <button onclick="saveApiKey()" style="background:#6366f1;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:0.85em;font-weight:600;">Save</button>
+            <span id="apiStatus" style="font-size:0.75em;color:${openaiApiKey ? '#10b981' : '#a0a0b8'};">${openaiApiKey ? '✅ Key saved — AI active' : 'No key = demo mode'}</span>
+        `;
+        const chatSection = document.getElementById('chat');
+        if (chatSection) {
+            const chatCard = chatSection.querySelector('.card') || chatSection.firstElementChild;
+            if (chatCard) chatSection.insertBefore(apiKeyBanner, chatCard);
+        }
+
+        function saveApiKey() {
+            const input = document.getElementById('apiKeyInput');
+            openaiApiKey = input.value.trim();
+            localStorage.setItem('openai_api_key', openaiApiKey);
+            const status = document.getElementById('apiStatus');
+            if (openaiApiKey) {
+                status.textContent = '✅ Key saved — AI active';
+                status.style.color = '#10b981';
+            } else {
+                status.textContent = 'No key = demo mode';
+                status.style.color = '#a0a0b8';
+            }
+        }
+
+        async function getBotResponse(userMessage) {
+            // If API key is set, use real OpenAI
+            if (openaiApiKey) {
+                chatHistoryMessages.push({ role: 'user', content: userMessage });
+                try {
+                    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + openaiApiKey },
+                        body: JSON.stringify({
+                            model: 'gpt-4o-mini',
+                            messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...chatHistoryMessages.slice(-10)],
+                            max_tokens: 300,
+                            temperature: 0.8
+                        })
+                    });
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    const reply = data.choices[0].message.content;
+                    chatHistoryMessages.push({ role: 'assistant', content: reply });
+                    return reply;
+                } catch (err) {
+                    return '⚠️ API Error: ' + err.message + '\n\nCheck your API key or try again.';
                 }
             }
-            return chatResponses.default[0];
+            // Fallback: keyword matching
+            const fallback = {
+                'hello':' Hey there! 👋 Welcome! How can I help you today?','hi':'Hi! 😊 What can I do for you?',
+                'help':'I can help with:\n• Events & meetups\n• Connecting with members\n• Community rules\n• Art & tech resources\n\nWhat interests you?',
+                'event':'🎉 Upcoming events:\n📅 Tech Meetup - Monday 7pm\n🎨 Art Exhibition - Friday\n💻 Coding Workshop - Saturday 2pm',
+                'rules':'✅ Be respectful\n✅ No spam\n✅ Share knowledge\n✅ Support each other\n✅ Have fun!',
+                'art':'🎨 We have daily challenges, portfolio reviews, and collab opportunities!',
+                'tech':'💻 Web dev, game design, AI/ML, hardware, open source — what are you into?',
+                'join':'🎉 Welcome! Check #introductions, read #rules, and explore #events!',
+                'project':'🚀 Share in #showcase or #work-in-progress — we love seeing member work!',
+                'bye':'See you later! 👋✨'
+            };
+            const msg = userMessage.toLowerCase();
+            for (const [key, resp] of Object.entries(fallback)) { if (msg.includes(key)) return resp; }
+            return '💡 Enter your OpenAI API key above to unlock full AI conversations! For now, try: hello, events, rules, art, tech, join';
         }
 
         // Chat functionality
@@ -1294,23 +1346,16 @@
         const chatMessages = document.getElementById('chatMessages');
         const typingIndicator = document.getElementById('typingIndicator');
 
-        chatInput.addEventListener('keypress', (e) => {
+        chatInput.addEventListener('keypress', async (e) => {
             if (e.key === 'Enter' && chatInput.value.trim()) {
                 const userMessage = chatInput.value.trim();
-                
-                // Add user message
                 addMessage(userMessage, 'user');
                 chatInput.value = '';
-                
-                // Show typing indicator
                 typingIndicator.classList.add('active');
                 
-                // Bot response after delay
-                setTimeout(() => {
-                    typingIndicator.classList.remove('active');
-                    const botResponse = getBotResponse(userMessage);
-                    addMessage(botResponse, 'bot');
-                }, 1000 + Math.random() * 1000);
+                const botResponse = await getBotResponse(userMessage);
+                typingIndicator.classList.remove('active');
+                addMessage(botResponse, 'bot');
             }
         });
 
