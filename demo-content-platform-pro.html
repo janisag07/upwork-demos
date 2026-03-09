@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Platform Pro - Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #4F46E5;
+            --primary-dark: #4338CA;
+            --secondary: #10B981;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --bg-light: #F9FAFB;
+            --bg-white: #FFFFFF;
+            --text-dark: #111827;
+            --text-gray: #6B7280;
+            --border: #E5E7EB;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--bg-white);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background: var(--bg-light);
+            color: var(--text-dark);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: #F3F4F6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            margin-bottom: 2rem;
+        }
+
+        .tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-gray);
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .card {
+            background: var(--bg-white);
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            background: var(--bg-light);
+            font-weight: 600;
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            border-bottom: 1px solid var(--border);
+        }
+
+        td {
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tr:hover {
+            background: var(--bg-light);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-success {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .badge-warning {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .badge-info {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .badge-danger {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            overflow: hidden;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .product-content {
+            padding: 1.25rem;
+        }
+
+        .product-title {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .product-desc {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            margin-bottom: 1rem;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .price {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .chat-panel {
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 0.5rem;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-light);
+            font-weight: 600;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .message-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-author {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+
+        .message-text {
+            background: var(--bg-light);
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .message.user .message-text {
+            background: var(--primary);
+            color: white;
+        }
+
+        .chat-input-container {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .chat-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            resize: none;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .stat-change.positive {
+            color: var(--secondary);
+        }
+
+        .stat-change.negative {
+            color: var(--danger);
+        }
+
+        .chart-container {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .email-builder {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            font-size: 0.875rem;
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .email-preview {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+        }
+
+        .email-preview-header {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+            border: 1px solid var(--border);
+        }
+
+        .email-preview-body {
+            background: var(--bg-white);
+            padding: 2rem;
+            border: 1px solid var(--border);
+            border-top: none;
+            border-radius: 0 0 0.5rem 0.5rem;
+            min-height: 300px;
+        }
+
+        .api-key-section {
+            background: var(--bg-white);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            box-shadow: var(--shadow);
+            margin-bottom: 1.5rem;
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 0.375rem;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+
+        .btn-sm {
+            padding: 0.375rem 0.75rem;
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .chat-container,
+            .email-builder {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 0 1rem;
+            }
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            background: var(--bg-light);
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            margin-right: 0.25rem;
+            color: var(--text-gray);
+        }
+
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            margin-right: 0.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="logo">📚 Content Platform Pro</div>
+            <div class="header-actions">
+                <button class="btn btn-secondary">Settings</button>
+                <button class="btn btn-primary">+ New Content</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('content')">📝 Content Dashboard</button>
+            <button class="tab" onclick="switchTab('store')">🛒 Resource Store</button>
+            <button class="tab" onclick="switchTab('chatbot')">💬 AI Chatbot</button>
+            <button class="tab" onclick="switchTab('analytics')">📊 Analytics</button>
+            <button class="tab" onclick="switchTab('email')">✉️ Email Campaigns</button>
+        </div>
+
+        <!-- Content Dashboard -->
+        <div id="content" class="section active">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Content Management</h2>
+                    <div>
+                        <button class="btn btn-secondary btn-sm">Filter</button>
+                        <button class="btn btn-primary btn-sm">+ New Article</button>
+                    </div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Tags</th>
+                            <th>Status</th>
+                            <th>Views</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Building a Successful Startup in 2024</strong></td>
+                            <td>Business</td>
+                            <td>
+                                <span class="tag">startup</span>
+                                <span class="tag">business</span>
+                            </td>
+                            <td><span class="badge badge-success">Published</span></td>
+                            <td>1,247</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>The Ultimate Guide to Career Transitions</strong></td>
+                            <td>Career</td>
+                            <td>
+                                <span class="tag">career</span>
+                                <span class="tag">guide</span>
+                            </td>
+                            <td><span class="badge badge-info">Premium</span></td>
+                            <td>2,891</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Marketing Strategies for Small Businesses</strong></td>
+                            <td>Marketing</td>
+                            <td>
+                                <span class="tag">marketing</span>
+                                <span class="tag">SMB</span>
+                            </td>
+                            <td><span class="badge badge-success">Published</span></td>
+                            <td>987</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Remote Work Best Practices</strong></td>
+                            <td>Career</td>
+                            <td>
+                                <span class="tag">remote</span>
+                                <span class="tag">productivity</span>
+                            </td>
+                            <td><span class="badge badge-warning">Draft</span></td>
+                            <td>0</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Financial Planning for Entrepreneurs</strong></td>
+                            <td>Finance</td>
+                            <td>
+                                <span class="tag">finance</span>
+                                <span class="tag">entrepreneurship</span>
+                            </td>
+                            <td><span class="badge badge-info">Premium</span></td>
+                            <td>3,456</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>Leadership Skills Every Manager Needs</strong></td>
+                            <td>Leadership</td>
+                            <td>
+                                <span class="tag">leadership</span>
+                                <span class="tag">management</span>
+                            </td>
+                            <td><span class="badge badge-success">Published</span></td>
+                            <td>1,678</td>
+                            <td>
+                                <button class="btn btn-secondary action-btn">Edit</button>
+                                <button class="btn btn-secondary action-btn">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Resource Store -->
+        <div id="store" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Downloadable Resources</h2>
+                    <button class="btn btn-primary">+ Add Resource</button>
+                </div>
+            </div>
+            <div class="product-grid">
+                <div class="product-card" onclick="showPurchase('Business Plan Template', 49)">
+                    <div class="product-image">📋</div>
+                    <div class="product-content">
+                        <div class="product-title">Business Plan Template</div>
+                        <div class="product-desc">Complete template with financial projections, market analysis, and executive summary.</div>
+                        <div class="product-footer">
+                            <div class="price">$49</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="showPurchase('Marketing Toolkit', 79)">
+                    <div class="product-image">📊</div>
+                    <div class="product-content">
+                        <div class="product-title">Marketing Toolkit</div>
+                        <div class="product-desc">Social media templates, email campaigns, and content calendars.</div>
+                        <div class="product-footer">
+                            <div class="price">$79</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="showPurchase('Career Development Guide', 39)">
+                    <div class="product-image">🎯</div>
+                    <div class="product-content">
+                        <div class="product-title">Career Development Guide</div>
+                        <div class="product-desc">Step-by-step roadmap for career advancement and skill development.</div>
+                        <div class="product-footer">
+                            <div class="price">$39</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="showPurchase('Startup Launch Checklist', 29)">
+                    <div class="product-image">🚀</div>
+                    <div class="product-content">
+                        <div class="product-title">Startup Launch Checklist</div>
+                        <div class="product-desc">Essential checklist covering legal, marketing, and operational tasks.</div>
+                        <div class="product-footer">
+                            <div class="price">$29</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="showPurchase('Financial Planning Spreadsheet', 59)">
+                    <div class="product-image">💰</div>
+                    <div class="product-content">
+                        <div class="product-title">Financial Planning Spreadsheet</div>
+                        <div class="product-desc">Comprehensive Excel template for budget tracking and forecasting.</div>
+                        <div class="product-footer">
+                            <div class="price">$59</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-card" onclick="showPurchase('Leadership Framework', 89)">
+                    <div class="product-image">👔</div>
+                    <div class="product-content">
+                        <div class="product-title">Leadership Framework</div>
+                        <div class="product-desc">Complete framework with assessments, development plans, and resources.</div>
+                        <div class="product-footer">
+                            <div class="price">$89</div>
+                            <button class="btn btn-primary btn-sm">Buy Now</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Chatbot -->
+        <div id="chatbot" class="section">
+            <div class="api-key-section">
+                <div class="form-group">
+                    <label class="form-label">🔑 OpenAI API Key (for real AI responses)</label>
+                    <input type="password" id="apiKey" class="api-key-input" placeholder="sk-..." onchange="saveApiKey()">
+                    <small style="color: var(--text-gray); display: block; margin-top: 0.5rem;">
+                        Leave empty to use realistic mock responses. With a valid key, the chatbot will use real AI.
+                    </small>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <!-- Article Assistant -->
+                <div class="chat-panel">
+                    <div class="chat-header">
+                        📄 Article Assistant
+                        <div style="font-size: 0.75rem; font-weight: normal; color: var(--text-gray); margin-top: 0.25rem;">
+                            Ask questions about specific articles
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="articleMessages">
+                        <div class="message">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div class="message-author">Article Assistant</div>
+                                <div class="message-text">
+                                    Hi! I can help you understand our articles better. Select an article and ask me anything about it!
+                                    <div style="margin-top: 1rem;">
+                                        <select id="articleSelect" class="form-select" style="width: 100%;">
+                                            <option>Building a Successful Startup in 2024</option>
+                                            <option>The Ultimate Guide to Career Transitions</option>
+                                            <option>Marketing Strategies for Small Businesses</option>
+                                            <option>Financial Planning for Entrepreneurs</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea id="articleInput" class="chat-input" rows="2" placeholder="Ask about the selected article..." onkeypress="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendArticleMessage();}"></textarea>
+                        <button class="btn btn-primary" onclick="sendArticleMessage()" style="width: 100%; margin-top: 0.5rem;">Send</button>
+                    </div>
+                </div>
+
+                <!-- Topic Chat -->
+                <div class="chat-panel">
+                    <div class="chat-header">
+                        💭 Topic-Based Chat
+                        <div style="font-size: 0.75rem; font-weight: normal; color: var(--text-gray); margin-top: 0.25rem;">
+                            Free conversation about business & career topics
+                        </div>
+                    </div>
+                    <div class="chat-messages" id="topicMessages">
+                        <div class="message">
+                            <div class="message-avatar">AI</div>
+                            <div class="message-content">
+                                <div class="message-author">Career Coach</div>
+                                <div class="message-text">
+                                    Hello! I'm here to discuss business strategy, career development, entrepreneurship, and more. What would you like to talk about?
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-container">
+                        <textarea id="topicInput" class="chat-input" rows="2" placeholder="Ask about business, career, or entrepreneurship..." onkeypress="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();sendTopicMessage();}"></textarea>
+                        <button class="btn btn-primary" onclick="sendTopicMessage()" style="width: 100%; margin-top: 0.5rem;">Send</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics -->
+        <div id="analytics" class="section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-label">Total Page Views</div>
+                    <div class="stat-value">45,821</div>
+                    <div class="stat-change positive">↑ 12.5% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Downloads</div>
+                    <div class="stat-value">1,247</div>
+                    <div class="stat-change positive">↑ 8.3% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Revenue</div>
+                    <div class="stat-value">$12,450</div>
+                    <div class="stat-change positive">↑ 23.1% from last month</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Subscribers</div>
+                    <div class="stat-value">3,892</div>
+                    <div class="stat-change positive">↑ 15.7% from last month</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1rem;">Content Views (Last 30 Days)</h3>
+                <canvas id="viewsChart"></canvas>
+            </div>
+
+            <div class="chart-container">
+                <h3 style="margin-bottom: 1rem;">Revenue & Downloads</h3>
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Email Campaigns -->
+        <div id="email" class="section">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Email Campaign Builder</h2>
+                    <button class="btn btn-primary">Send Campaign</button>
+                </div>
+            </div>
+
+            <div class="email-builder">
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem;">Campaign Settings</h3>
+                    <div class="form-group">
+                        <label class="form-label">Campaign Name</label>
+                        <input type="text" class="form-input" id="campaignName" placeholder="Weekly Newsletter #42" value="Weekly Newsletter #42">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Subject Line</label>
+                        <input type="text" class="form-input" id="emailSubject" placeholder="Your Weekly Business Insights" value="Your Weekly Business Insights" oninput="updateEmailPreview()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Segment</label>
+                        <select class="form-select" id="emailSegment">
+                            <option>All Subscribers (3,892)</option>
+                            <option>Premium Members (847)</option>
+                            <option>Free Tier (3,045)</option>
+                            <option>Business Category (1,523)</option>
+                            <option>Career Category (2,108)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Schedule</label>
+                        <select class="form-select" id="emailSchedule">
+                            <option>Send Now</option>
+                            <option>Schedule for Later</option>
+                            <option>Add to Drip Campaign</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email Content</label>
+                        <textarea class="form-textarea" id="emailContent" oninput="updateEmailPreview()">Hi there!
+
+This week's top insights on business and career development:
+
+🚀 New Article: "Building a Successful Startup in 2024"
+Learn the essential strategies for launching your venture.
+
+💼 Resource Spotlight: Marketing Toolkit (20% off)
+Everything you need to boost your marketing game.
+
+💡 Quick Tip: Focus on solving real problems, not just building features.
+
+Stay focused on your goals!
+
+Best regards,
+The Content Platform Team</textarea>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3 style="margin-bottom: 1.5rem;">Email Preview</h3>
+                    <div class="email-preview">
+                        <div class="email-preview-header">
+                            <div style="font-size: 0.875rem; color: var(--text-gray); margin-bottom: 0.5rem;">From: team@contentplatform.com</div>
+                            <div style="font-size: 0.875rem; color: var(--text-gray); margin-bottom: 1rem;">To: subscribers@example.com</div>
+                            <div style="font-size: 1.25rem; font-weight: 600;" id="previewSubject">Your Weekly Business Insights</div>
+                        </div>
+                        <div class="email-preview-body">
+                            <div id="previewBody" style="white-space: pre-wrap; line-height: 1.8;">Hi there!
+
+This week's top insights on business and career development:
+
+🚀 New Article: "Building a Successful Startup in 2024"
+Learn the essential strategies for launching your venture.
+
+💼 Resource Spotlight: Marketing Toolkit (20% off)
+Everything you need to boost your marketing game.
+
+💡 Quick Tip: Focus on solving real problems, not just building features.
+
+Stay focused on your goals!
+
+Best regards,
+The Content Platform Team</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-top: 1.5rem;">
+                <div class="card-header">
+                    <h2 class="card-title">Recent Campaigns</h2>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Campaign</th>
+                            <th>Segment</th>
+                            <th>Sent</th>
+                            <th>Open Rate</th>
+                            <th>Click Rate</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Weekly Newsletter #41</strong></td>
+                            <td>All Subscribers</td>
+                            <td>3,892</td>
+                            <td>42.3%</td>
+                            <td>8.7%</td>
+                            <td><span class="badge badge-success">Sent</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Premium Content Launch</strong></td>
+                            <td>Premium Members</td>
+                            <td>847</td>
+                            <td>68.1%</td>
+                            <td>23.4%</td>
+                            <td><span class="badge badge-success">Sent</span></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resource Sale Announcement</strong></td>
+                            <td>All Subscribers</td>
+                            <td>3,892</td>
+                            <td>51.2%</td>
+                            <td>15.3%</td>
+                            <td><span class="badge badge-success">Sent</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+
+            if (tabName === 'analytics') {
+                setTimeout(initCharts, 100);
+            }
+        }
+
+        // Purchase flow
+        function showPurchase(name, price) {
+            if (confirm(`Purchase "${name}" for $${price}?\n\nThis is a demo - no actual payment will be processed.`)) {
+                alert(`✅ Purchase successful!\n\n"${name}" has been added to your downloads.\n\nCheck your email for the download link.`);
+            }
+        }
+
+        // API Key management
+        let apiKey = localStorage.getItem('openai_api_key') || '';
+        if (apiKey) {
+            document.getElementById('apiKey').value = apiKey;
+        }
+
+        function saveApiKey() {
+            apiKey = document.getElementById('apiKey').value;
+            localStorage.setItem('openai_api_key', apiKey);
+            alert(apiKey ? '✅ API Key saved! Chat will now use real AI responses.' : 'API Key cleared. Using mock responses.');
+        }
+
+        // Article Assistant Chat
+        async function sendArticleMessage() {
+            const input = document.getElementById('articleInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const article = document.getElementById('articleSelect').value;
+            const messagesDiv = document.getElementById('articleMessages');
+
+            // Add user message
+            messagesDiv.innerHTML += `
+                <div class="message user">
+                    <div class="message-avatar">You</div>
+                    <div class="message-content">
+                        <div class="message-author">You</div>
+                        <div class="message-text">${escapeHtml(message)}</div>
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Show loading
+            const loadingId = 'loading-' + Date.now();
+            messagesDiv.innerHTML += `
+                <div class="message" id="${loadingId}">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-author">Article Assistant</div>
+                        <div class="message-text"><span class="loading"></span> Thinking...</div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            let response;
+            if (apiKey && apiKey.startsWith('sk-')) {
+                response = await getAIResponse(message, `You are an assistant helping users understand the article "${article}". Answer their question about this business/career article.`);
+            } else {
+                response = getMockArticleResponse(message, article);
+            }
+
+            // Remove loading, add response
+            document.getElementById(loadingId).remove();
+            messagesDiv.innerHTML += `
+                <div class="message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-author">Article Assistant</div>
+                        <div class="message-text">${escapeHtml(response)}</div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // Topic Chat
+        async function sendTopicMessage() {
+            const input = document.getElementById('topicInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const messagesDiv = document.getElementById('topicMessages');
+
+            // Add user message
+            messagesDiv.innerHTML += `
+                <div class="message user">
+                    <div class="message-avatar">You</div>
+                    <div class="message-content">
+                        <div class="message-author">You</div>
+                        <div class="message-text">${escapeHtml(message)}</div>
+                    </div>
+                </div>
+            `;
+
+            input.value = '';
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            // Show loading
+            const loadingId = 'loading-' + Date.now();
+            messagesDiv.innerHTML += `
+                <div class="message" id="${loadingId}">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-author">Career Coach</div>
+                        <div class="message-text"><span class="loading"></span> Thinking...</div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+            let response;
+            if (apiKey && apiKey.startsWith('sk-')) {
+                response = await getAIResponse(message, 'You are a business and career coach. Provide helpful advice on entrepreneurship, career development, and business strategy.');
+            } else {
+                response = getMockTopicResponse(message);
+            }
+
+            // Remove loading, add response
+            document.getElementById(loadingId).remove();
+            messagesDiv.innerHTML += `
+                <div class="message">
+                    <div class="message-avatar">AI</div>
+                    <div class="message-content">
+                        <div class="message-author">Career Coach</div>
+                        <div class="message-text">${escapeHtml(response)}</div>
+                    </div>
+                </div>
+            `;
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        // AI API call
+        async function getAIResponse(userMessage, systemPrompt) {
+            try {
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: 'gpt-3.5-turbo',
+                        messages: [
+                            { role: 'system', content: systemPrompt },
+                            { role: 'user', content: userMessage }
+                        ],
+                        max_tokens: 300
+                    })
+                });
+
+                const data = await response.json();
+                if (data.error) {
+                    return `Error: ${data.error.message}. Using mock response instead.\n\n${getMockTopicResponse(userMessage)}`;
+                }
+                return data.choices[0].message.content;
+            } catch (error) {
+                return `API Error: ${error.message}. Using mock response instead.\n\n${getMockTopicResponse(userMessage)}`;
+            }
+        }
+
+        // Mock responses
+        function getMockArticleResponse(question, article) {
+            const responses = {
+                'Building a Successful Startup in 2024': 'The article emphasizes three key pillars: market validation, lean operations, and customer obsession. It recommends starting with a minimum viable product and iterating based on real customer feedback rather than assumptions.',
+                'The Ultimate Guide to Career Transitions': 'This guide breaks down career transitions into 4 phases: self-assessment, skill mapping, strategic networking, and execution. It stresses that successful transitions usually take 6-12 months of deliberate planning.',
+                'Marketing Strategies for Small Businesses': 'The article focuses on high-ROI, low-budget tactics: content marketing, email nurturing, and strategic partnerships. It warns against spreading too thin across too many channels.',
+                'Financial Planning for Entrepreneurs': 'Key takeaway: separate personal and business finances from day one. The article provides a framework for cash flow forecasting and recommends maintaining 6 months of operating expenses as runway.'
+            };
+            return responses[article] || 'Based on the article, the main point is to focus on actionable strategies and avoid common pitfalls. Would you like me to elaborate on any specific section?';
+        }
+
+        function getMockTopicResponse(question) {
+            const lowerQ = question.toLowerCase();
+            if (lowerQ.includes('startup') || lowerQ.includes('business')) {
+                return 'Starting a business requires three things: a real problem to solve, a viable business model, and execution discipline. Focus on validating your idea with real customers before scaling. What specific aspect of starting a business are you curious about?';
+            } else if (lowerQ.includes('career') || lowerQ.includes('job')) {
+                return 'Career growth is about strategic positioning, not just hard work. Identify high-impact skills in your field, build a visible portfolio, and network intentionally. What stage of your career are you at right now?';
+            } else if (lowerQ.includes('marketing')) {
+                return 'Effective marketing is about clarity and consistency. Define your unique value proposition, identify where your audience spends time, and show up there consistently with valuable content. What are you trying to market?';
+            } else {
+                return 'That\'s a great question. Success in business and career comes down to continuous learning, strategic relationships, and disciplined execution. Could you tell me more about your specific situation?';
+            }
+        }
+
+        // Email preview
+        function updateEmailPreview() {
+            document.getElementById('previewSubject').textContent = document.getElementById('emailSubject').value;
+            document.getElementById('previewBody').textContent = document.getElementById('emailContent').value;
+        }
+
+        // Charts
+        function initCharts() {
+            // Views Chart
+            const viewsCtx = document.getElementById('viewsChart');
+            if (viewsCtx && !viewsCtx.chart) {
+                viewsCtx.chart = new Chart(viewsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Page Views',
+                            data: [12000, 15000, 13000, 18000, 22000, 25000, 28000, 32000, 35000, 38000, 42000, 45000],
+                            borderColor: '#4F46E5',
+                            backgroundColor: 'rgba(79, 70, 229, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart');
+            if (revenueCtx && !revenueCtx.chart) {
+                revenueCtx.chart = new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: [3200, 4100, 3800, 5200, 6700, 7200, 8100, 9400, 10200, 11100, 11800, 12450],
+                            backgroundColor: '#10B981'
+                        }, {
+                            label: 'Downloads',
+                            data: [45, 58, 52, 78, 95, 102, 115, 134, 145, 158, 167, 178],
+                            backgroundColor: '#F59E0B'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: { display: true }
+                        },
+                        scales: {
+                            y: { beginAtZero: true }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Utility
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Content Platform Pro Demo loaded ✅');
+        });
+    </script>
+</body>
+</html>
